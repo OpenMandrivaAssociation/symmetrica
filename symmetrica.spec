@@ -7,7 +7,7 @@ Group:		Sciences/Mathematics
 License:	Public Domain
 Summary:	Collection of math routines in the C programming language
 Version:	2.0
-Release:	%mkrel 2
+Release:	%mkrel 3
 Source:		http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/SYM2_0_tar.gz
 URL:		http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -34,6 +34,7 @@ Their use is facilitated by Symmetrica's object oriented style.
 %package	-n %{staticname}
 Group:		System/Libraries
 Summary:	Symmetrica development files
+Provides:	%{name}-static-devel = %{version}-%{release}
 
 %description	-n %{staticname}
 Symmetrica development files.
