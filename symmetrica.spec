@@ -7,11 +7,17 @@ Group:		Sciences/Mathematics
 License:	Public Domain
 Summary:	Collection of math routines in the C programming language
 Version:	2.0
-Release:	%mkrel 4
+Release:	%mkrel 5
 Source:		http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/SYM2_0_tar.gz
 URL:		http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires:	%{staticname}
+
+# sagemath patches
+Patch0:	de.patch
+Patch1:	macro.h.patch
+Patch2:	makefile.patch
+Patch3:	sort_sum_rename.patch 
 
 %description
 Symmetrica is a program developed by Lehrstuhl Mathematik II of the
@@ -42,10 +48,13 @@ Symmetrica development files.
 %prep
 %setup -q -c
 
-perl -pi -e 's/^(\s+g?cc\s)/$1-fPIC /;' makefile
+%patch0 -p0
+%patch1 -p0
+%patch2 -p0
+%patch3 -p2
 
 %build
-%make
+%make CFLAGS="%{optflags} -fPIC -DFAST -DALLTRUE"
 ar crs libsymmetrica.a *.o
 
 %install
