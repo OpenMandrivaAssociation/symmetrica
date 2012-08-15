@@ -1,96 +1,93 @@
-%define name		symmetrica
-%define staticname	%mklibname %{name} -d -s
+%define name				symmetrica
+%define old_libsymmetrica_static	%mklibname %{name} -d -s
 
 Name:		%{name}
-Group:		Sciences/Mathematics
-# http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/copyright_engl.html
-License:	Public Domain
-Summary:	Collection of math routines in the C programming language
 Version:	2.0
-Release:	%mkrel 5
-Source:		http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/SYM2_0_tar.gz
+Release:	6
+Summary:	A Collection of Routines for Solving Symmetric Groups
+Group:		Sciences/Mathematics
+# Note: they claim it's 'public domain' but then provide this:
+# http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/copyright_engl.html
+License:	MIT
 URL:		http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Requires:	%{staticname}
-
-# sagemath patches
-Patch0:	de.patch
-Patch1:	macro.h.patch
-Patch2:	makefile.patch
-Patch3:	sort_sum_rename.patch 
+Source0:	http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/SYM2_0_tar.gz
+# Sent upstream 8 May 2012.  Sagemath patch to fix namespace collisions on the
+# names "sort" and "sum".
+Patch0:		symmetrica-sort_sum_rename.patch
+# Sent upstream 8 May 2012.  The INT type should always be a 4-byte type, but
+# the sources use an incorrect and outdated method of ensuring this.
+Patch1:		symmetrica-int.patch
+# Will not be sent upstream, as it is GCC-specific.  Add function attributes
+# to quiet GCC warnings and improve opportunities for optimization.
+Patch2:		symmetrica-attribute.patch
 
 %description
-Symmetrica is a program developed by Lehrstuhl Mathematik II of the
-University of Bayreuth. It has routines to handle the following topics:
-    o ordinary representation theory of the symmetric group and related groups
-    o ordinary representation theory of the classical groups
-    o modular representation theory of the symmetric group
-    o projective representation theory of the symmetric group
-    o combinatorics of tableaux
-    o symmetric functions and polynomials
-    o commutative and non commutative Schubert polynomials
-    o operations of finite groups.
-    o ordinary representation theory of Hecke algebras of type An 
-
 Symmetrica is a collection of routines, written in the programming
-language C, through which the user can readily write his/her own programs.
-Routines which manipulate many types of mathematical objects are available.
-Their use is facilitated by Symmetrica's object oriented style.
+language C, through which the user can readily write his/her own
+programs. Routines which manipulate many types of mathematical objects
+are available.
 
-%package	-n %{staticname}
+%package	devel
 Group:		System/Libraries
 Summary:	Symmetrica development files
-Provides:	%{name}-static-devel = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
+Obsoletes:	%{old_libsymmetrica_static} < %{version}-%{release}
 
-%description	-n %{staticname}
-Symmetrica development files.
+%description	devel
+The %{name}-devel package contains libraries and header files for
+developing applications that use %{name}.
 
 %prep
 %setup -q -c
-
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
-%patch3 -p2
+
+# Don't print the banner on every library load and API function call
+sed -i "s/^\(INT no_banner = \)FALSE/\1TRUE/" de.c
 
 %build
-%make CFLAGS="%{optflags} -fPIC -DFAST -DALLTRUE"
-ar crs libsymmetrica.a *.o
+# All the silly *TRUE defines:
+#DFLAGS=$(for def in $(grep '#ifdef' *.c | cut -d':' -f2 | cut -d' ' -f2 | egrep .*TRUE | sort | uniq); do echo -D${def}; done)
+DFLAGS="-DBINTREETRUE -DBRUCHTRUE -DCHARTRUE -DCYCLOTRUE -DDGTRUE \
+  -DELMSYMTRUE -DFFTRUE -DGRALTRUE -DGRAPHTRUE -DGRTRUE -DHOMSYMTRUE \
+  -DINTEGERTRUE -DKOSTKATRUE -DKRANZTRUE -DLAURENTTRUE -DLISTTRUE \
+  -DLONGINTTRUE -DMATRIXTRUE -DMONOMIALTRUE -DMONOMTRUE \
+  -DMONOPOLYTRUE -DNUMBERTRUE -DPARTTRUE -DPERMTRUE -DPLETTRUE \
+  -DPOLYTRUE -DPOWSYMTRUE -DREIHETRUE -DSABTRUE -DSCHUBERTTRUE \
+  -DSCHURTRUE -DSHUFFLETRUE -DSKEWPARTTRUE -DSQRADTRUE -DTABLEAUXTRUE \
+  -DVECTORTRUE -DWORDTRUE -DZYKTRUE"
+
+for file in *.c; do
+  if [ $file != "test.c" ] ; then
+    gcc %{optflags} -c ${file} -I. -DFAST ${DFLAGS}
+  fi
+done
+ar rcs lib%{name}.a *.o
+rm -f *.o
+for file in *.c; do
+  if [ $file != "test.c" ] ; then
+    gcc %{optflags} -fPIC -c ${file} -I. -DFAST ${DFLAGS}
+  fi
+done
+gcc %{optflags} $RPM_LD_FLAGS -shared -Xlinker -hlib%{name}.so.0 \
+    -o lib%{name}.so.0.0.0 *.o
 
 %install
-mkdir -p %{buildroot}%{_usrsrc}/%{name}
-cp -fa *.c makefile %{buildroot}%{_usrsrc}/%{name}
-mkdir -p %{buildroot}%{_docdir}/%{name}
-cp -fa README *.doc %{buildroot}%{_docdir}/%{name}
-
-mkdir -p %{buildroot}%{_bindir}
-cp -f test %{buildroot}%{_bindir}/%{name}-test
-
-# make docs easily reachable from srcdir
-ln -sf %{_docdir}/%{name} %{buildroot}%{_usrsrc}/%{name}/doc
-
-mkdir -p %{buildroot}%{_includedir}/%{name}
-cp *.h %{buildroot}%{_includedir}/%{name}
-ln -sf %{_includedir}/%{name}/def.h %{buildroot}%{_usrsrc}/%{name}
-ln -sf %{_includedir}/%{name}/macro.h %{buildroot}%{_usrsrc}/%{name}
-
-mkdir -p %{buildroot}%{_libdir}
-cp -f libsymmetrica.a %{buildroot}%{_libdir}
-
-chmod -R a+r %{buildroot}
-
-%clean
-rm -rf %{buildroot}
+chmod -R a+r .
+mkdir -p $RPM_BUILD_ROOT%{_libdir}
+install -m 755 lib%{name}.so.0.0.0 $RPM_BUILD_ROOT%{_libdir}/
+ln -s lib%{name}.so.0.0.0 $RPM_BUILD_ROOT%{_libdir}/lib%{name}.so.0
+ln -s lib%{name}.so.0 $RPM_BUILD_ROOT%{_libdir}/lib%{name}.so
+mkdir -p $RPM_BUILD_ROOT%{_includedir}/%{name}
+install -m 644 *.h $RPM_BUILD_ROOT%{_includedir}/%{name}/
 
 %files
-%defattr(-,root,root)
-%{_bindir}/%{name}-test
-%dir %{_usrsrc}/%{name}
-%{_usrsrc}/%{name}/*
-%dir %doc %{_docdir}/%{name}
-%doc %{_docdir}/%{name}/*
+%doc *.doc
+%{_libdir}/lib%{name}.so.0.0.0
+%{_libdir}/lib%{name}.so.0
 
-%files		-n %{staticname}
-%{_libdir}/*.a
-%dir %{_includedir}/%{name}
-%{_includedir}/%{name}/*
+%files devel
+%doc test.c
+%{_includedir}/%{name}
+%{_libdir}/lib%{name}.so
