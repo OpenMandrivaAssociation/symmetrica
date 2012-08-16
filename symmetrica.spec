@@ -3,7 +3,7 @@
 
 Name:		%{name}
 Version:	2.0
-Release:	%mkrel 6
+Release:	%mkrel 7
 Summary:	A Collection of Routines for Solving Symmetric Groups
 Group:		Sciences/Mathematics
 # Note: they claim it's 'public domain' but then provide this:
