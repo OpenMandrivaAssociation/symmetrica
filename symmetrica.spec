@@ -1,9 +1,11 @@
-%define name				symmetrica
-%define old_libsymmetrica_static	%mklibname %{name} -d -s
+%define name			symmetrica
+%define libsymmetrica		%mklibname %{name} 0
+%define libsymmetrica_devel	%mklibname %{name} -d
+%define libsymmetrica_static	%mklibname %{name} -d -s
 
 Name:		%{name}
 Version:	2.0
-Release:	%mkrel 7
+Release:	8
 Summary:	A Collection of Routines for Solving Symmetric Groups
 Group:		Sciences/Mathematics
 # Note: they claim it's 'public domain' but then provide this:
@@ -27,13 +29,23 @@ language C, through which the user can readily write his/her own
 programs. Routines which manipulate many types of mathematical objects
 are available.
 
-%package	devel
+%package	-n %{libsymmetrica}
 Group:		System/Libraries
-Summary:	Symmetrica development files
-Requires:	%{name} = %{version}-%{release}
-Obsoletes:	%{old_libsymmetrica_static} < %{version}-%{release}
+Summary:	Symmetrica runtime files
+Obsoletes:	symmetrica < %{version}-%{release}
 
-%description	devel
+%description	-n %{libsymmetrica}
+Symmetrica runtime files.
+
+%package	-n %{libsymmetrica_devel}
+Group:		Development/C
+Summary:	Symmetrica development files
+Requires:	%{libsymmetrica} = %{version}-%{release}
+Provides:	symmetrica-devel = %{version}-%{release}
+Obsoletes:	symmetrica-devel < %{version}-%{release}
+Obsoletes:	%{libsymmetrica_static} < %{version}-%{release}
+
+%description	-n %{libsymmetrica_devel}
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
@@ -82,12 +94,12 @@ ln -s lib%{name}.so.0 $RPM_BUILD_ROOT%{_libdir}/lib%{name}.so
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/%{name}
 install -m 644 *.h $RPM_BUILD_ROOT%{_includedir}/%{name}/
 
-%files
+%files		-n %{libsymmetrica}
 %doc *.doc
 %{_libdir}/lib%{name}.so.0.0.0
 %{_libdir}/lib%{name}.so.0
 
-%files devel
+%files		-n %{libsymmetrica_devel}
 %doc test.c
 %{_includedir}/%{name}
 %{_libdir}/lib%{name}.so
