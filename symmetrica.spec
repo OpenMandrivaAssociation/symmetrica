@@ -5,7 +5,7 @@
 
 Name:		%{name}
 Version:	2.0
-Release:	9
+Release:	10
 Summary:	A Collection of Routines for Solving Symmetric Groups
 Group:		Sciences/Mathematics
 # Note: they claim it's 'public domain' but then provide this:
