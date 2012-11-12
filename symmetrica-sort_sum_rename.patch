@@ -1,0 +1,313 @@
+--- ./nu.c.orig	2007-12-06 09:30:16.000000000 -0700
++++ ./nu.c	2012-05-08 08:29:01.778059252 -0600
+@@ -531,13 +531,13 @@ add_ende:
+     ENDR("add");
+ }
+ 
+-INT sort(a) OP a;
++INT sym_sort(a) OP a;
+ /* sortiert das object in aufsteigender reihenfolge AK 270787 */
+ /* AK 160986 */ /* AK 280689 V1.0 */ /* AK 050390 V1.1 */
+ /* AK 070891 V1.3 */
+ {
+     INT erg = OK;
+-    EOP("sort(1)",a);
++    EOP("sym_sort(1)",a);
+ 
+     switch(S_O_K(a))
+     {
+@@ -547,9 +547,9 @@ INT sort(a) OP a;
+         erg += sort_vector(a);break;
+ #endif /* VECTORTRUE */
+     default:
+-        erg += WTO("sort",a); break;
++        erg += WTO("sym_sort",a); break;
+     };
+-    ENDR("sort");
++    ENDR("sym_sort");
+ }
+ 
+ INT length(a,d) OP a,d;
+@@ -641,7 +641,7 @@ INT content(a,b) OP a,b;
+     ENDR("content");
+ }
+ 
+-INT sum(a,res) OP a,res;
++INT sym_sum(a,res) OP a,res;
+ /* AK 280689 V1.0 */ /* AK 050390 V1.1 */ /* AK 120391 V1.2 */
+ /* AK 140891 V1.3 */
+ /* AK 170298 V2.0 */
+@@ -649,7 +649,7 @@ INT sum(a,res) OP a,res;
+     INT erg = OK;
+     COP("sum(1)",a);
+     COP("sum(2)",res);
+-    CE2(a,res,sum);
++    CE2(a,res,sym_sum);
+ 
+     switch(S_O_K(a))
+     {
+@@ -680,7 +680,7 @@ INT sum(a,res) OP a,res;
+         erg += WTO("sum",a); break;
+     };
+ 
+-    ENDR("sum");
++    ENDR("sym_sum");
+ }
+ 
+ 
+--- ./zyk.c.orig	2007-12-06 09:30:50.000000000 -0700
++++ ./zyk.c	2012-05-08 08:29:01.785059244 -0600
+@@ -804,7 +804,7 @@ static INT zykelind_arb_co(expztvec,numz
+     zykeltypvec = CALLOCOBJECT();
+     ak_order = CALLOCOBJECT();
+ 
+-    sum(numztvec,ak_order); /* AK 060295 */
++    sym_sum(numztvec,ak_order); /* AK 060295 */
+ 
+ 
+ 
+@@ -1176,7 +1176,7 @@ INT no_orbits_arb(a,b,c) OP a,b,c;
+     erg += m_i_i(0,c);
+     while (z!=NULL)
+         {
+-        erg += sum(S_PO_S(z),e);
++        erg += sym_sum(S_PO_S(z),e);
+         erg += hoch(b,e,e);
+         erg += mult_apply(S_PO_K(z),e);
+         erg += add_apply(e,c);
+--- ./ta.c.orig	2007-12-06 09:30:36.000000000 -0700
++++ ./ta.c	2012-05-08 08:29:01.784059245 -0600
+@@ -1596,7 +1596,7 @@ aaa:
+     {
+     OP d,e;
+     e = CALLOCOBJECT();
+-    erg += sum(content,e); /* AK 271098 */
++    erg += sym_sum(content,e); /* AK 271098 */
+     d = CALLOCOBJECT();
+     erg += weight(shape,d);
+     if (NEQ(d,e))
+@@ -1821,7 +1821,7 @@ INT matrix_twoword(matrix, column_index,
+     CE3(matrix, column_index, row_index,matrix_twoword);
+     c = callocobject();
+     erg += zeilen_summe(matrix,c);
+-    erg += sum(c,c);
++    erg += sym_sum(c,c);
+     erg += m_l_v(c,column_index);
+     erg += m_l_v(c,row_index);
+     for(i=0,l=0;i<S_M_HI(matrix);i++)
+--- ./nc.c.orig	2007-12-06 09:30:15.000000000 -0700
++++ ./nc.c	2012-05-08 08:29:01.776059254 -0600
+@@ -204,7 +204,7 @@ INT scalarproduct_nc(a,b,c) OP a,b,c;
+     erg += mult(S_NC_C(a),S_NC_C(b),d);
+     erg += m_gl_co(S_NC_GL(a),e);
+     erg += mult_apply(e,d);
+-    erg += sum(d,e);
++    erg += sym_sum(d,e);
+     erg += m_gl_go(S_NC_GL(a),d);
+     erg += div(e,d,c);
+     erg += freeall(e);
+@@ -617,7 +617,7 @@ INT reduce_nc_kranz(a,b) OP a,b;
+         erg += mult_nc_kranz(c,a,e);
+         erg += mult(S_V_I(e,1L),f,c);
+         erg += div(c,g,c);
+-        erg += sum(c,S_V_I(S_NC_C(b),S_I_I(d)));
++        erg += sym_sum(c,S_V_I(S_NC_C(b),S_I_I(d)));
+     }
+     erg += freeall(c); 
+     erg += freeall(d); 
+@@ -712,7 +712,7 @@ INT m_vcl_kranz(l,a) OP l,a;
+     for(j = 0L; j<S_V_LI(c);j++) {
+         kranztypus_to_matrix(S_V_I(c,j),S_V_I(a,j)); 
+     }
+-    sort(a);
++    sym_sort(a);
+     freeall(f); freeall(h); freeall(c);
+     return OK;
+ }
+@@ -739,7 +739,7 @@ INT m_vco_kranz(l,a) OP l,a;
+         kranztypus_to_matrix(S_V_I(c,j),S_V_I(h,j)); 
+         }
+     
+-    sort(h); 
++    sym_sort(h); 
+     m_l_v(S_V_L(h),a);
+     for(j = 0L; j<S_V_LI(c);j++) {
+         typusorder(S_V_I(h,j), zb, za, S_V_I(a,j), f);
+@@ -789,7 +789,7 @@ INT order_class_kranz(l,i,a) OP l,i,a;
+         erg += kranztypus_to_matrix(S_V_I(c,j),S_V_I(h,j)); 
+     }
+     
+-    erg += sort(h);
++    erg += sym_sort(h);
+     erg += typusorder(S_V_I(h,S_I_I(i)), zb, za, a, f);
+     erg += freeall(f); 
+     erg += freeall(c); 
+--- ./rest.c.orig	2007-12-06 09:30:31.000000000 -0700
++++ ./rest.c	2012-05-08 08:29:01.783059247 -0600
+@@ -3998,7 +3998,7 @@ aaa:
+                 oj = j;
+                 }
+         }
+-    erg += sum(c,b);
++    erg += sym_sum(c,b);
+ eee:
+     erg += freeall(c);
+     ENDR("charge_word");
+--- ./bar.c.orig	2007-12-06 09:29:59.000000000 -0700
++++ ./bar.c	2012-05-08 08:29:01.770059262 -0600
+@@ -237,7 +237,7 @@ INT rz_lehmercode_bar(a,b) OP a,b;
+     g = callocobject();
+     e = S_V_I(a,0L);
+     f = S_V_I(a,1L);
+-    erg += sum(f,g);
++    erg += sym_sum(f,g);
+     j=0L;
+     for (i=0L;i<S_V_LI(e);i++)
+         j += S_V_II(e,i)*(i+1L);
+@@ -427,7 +427,7 @@ INT makevectorof_class_bar(a,b) OP a,b;
+     for (i=0L;i<S_V_LI(b);i++)
+         erg += kranztypus_to_matrix(S_V_I(c,i),S_V_I(b,i));
+     erg += freeall(c);
+-    erg += sort(b); /* AK 130592 */
++    erg += sym_sort(b); /* AK 130592 */
+     ENDR("makevectorof_class_bar");
+ }
+ 
+@@ -615,7 +615,7 @@ INT length_bar(a,b) OP a,b;
+     c = callocobject();
+     d = callocobject();
+     erg += lehmercode_bar(a,c);
+-    erg += sum(S_V_I(c,1L),b);
++    erg += sym_sum(S_V_I(c,1L),b);
+     for(i=0L;i<S_P_LI(a);i++)
+         {
+         if (S_V_II(S_V_I(c,0L),i) == 1L)
+--- ./di.c.orig	2007-12-06 09:30:00.000000000 -0700
++++ ./di.c	2012-05-08 08:29:01.773059259 -0600
+@@ -1355,7 +1355,7 @@ INT get_orb_rep(G,m,n,L,len,konstr)
+ 				m_il_nv(0L,weight_watcher);
+ 				m_il_nv(0L,perm_vec);
+ 				copy(S_V_I(FP,0L),fix);
+-				sort(fix);
++				sym_sort(fix);
+ 
+ 				get_perm(hweight,p,b,S_I_I(n),S_I_I(m),0L,
+ 						 perm_vec,weight_watcher,fix);
+@@ -1502,7 +1502,7 @@ INT get_perm(w,p,b,n,m,ind,perm_vec,ww,f
+ 	if(ind == m)
+ 	{
+ 		mult_perm_fix(p,fix,hfix);
+-		sort(hfix);
++		sym_sort(hfix);
+ 		if(!hfix_in_ww(hfix,ww))
+ 		{
+ 			inc(ww);
+--- ./galois.c.orig	2007-12-06 09:30:01.000000000 -0700
++++ ./galois.c	2012-05-08 08:29:01.774059258 -0600
+@@ -758,7 +758,7 @@ nn:
+ 		}
+         }
+     FREEALL2(v,nv);
+-    sort(res);
++    sym_sort(res);
+     }
+     S3R(k,phg_c,phg_d,"all_points_phg_store",res);
+     ENDR("all_points");
+--- ./perm.c.orig	2007-12-06 09:30:19.000000000 -0700
++++ ./perm.c	2012-05-08 08:31:55.863843141 -0600
+@@ -833,7 +833,7 @@ komponeten. */
+     /* s = Anzahl der spalten */
+         
+     s = S_V_LI(S_V_I(a,0L));
+-    sum(S_V_I(a,0L),summe);/* composition ist vector */
++    sym_sum(S_V_I(a,0L),summe);/* composition ist vector */
+     z = S_I_I(summe);
+     FREEALL(summe); 
+     m_ilih_nm(s,z,b); 
+@@ -1114,7 +1114,7 @@ h wird der vektor der label der konjugie
+         erg += kranztypus_to_matrix(S_V_I(c,i),S_V_I(h,i)); 
+     }
+     
+-    erg += sort(h);
++    erg += sym_sort(h);
+ 
+     erg += chartafel(b,ct);
+ 
+@@ -1926,7 +1926,7 @@ INT numberof_inversionen(a,b) OP a,b;
+     OP c;
+     c = CALLOCOBJECT();
+     erg += lehmercode_permutation(a,c); /*result is a vector */
+-    erg += sum(c,b); 
++    erg += sym_sum(c,b); 
+     FREEALL(c);
+     }
+     ENDR("numberof_inversionen");
+@@ -2364,7 +2364,7 @@ vgl verfahren 1 in diplomarbeit */
+     COP("rz_lehmercode(2)",b);
+ 
+     zw = callocobject();
+-    erg += sum(lc,zw); 
++    erg += sym_sum(lc,zw); 
+     if (NULLP(zw)) 
+         {
+         erg += m_il_integervector((INT)0,b);
+--- ./part.c.orig	2007-12-06 09:30:17.000000000 -0700
++++ ./part.c	2012-05-08 08:29:01.779059251 -0600
+@@ -347,7 +347,7 @@ INT append_apply_part(a,b) OP a,b;
+     if (a == b) { /* a := a+a */
+         if (S_PA_K(a) == VECTOR) {
+             erg += append_apply_vector(S_PA_S(a),S_PA_S(b));
+-            erg += sort(S_PA_S(a));
++            erg += sym_sort(S_PA_S(a));
+             goto endr_ende;
+         }
+         else if (S_PA_K(a) == EXPONENT) {
+@@ -406,7 +406,7 @@ INT append_apply_part(a,b) OP a,b;
+             k=S_PA_LI(b)-1;
+ /*
+             erg += append_apply_vector(S_PA_S(a),S_PA_S(b));
+-            erg += sort(S_PA_S(a));
++            erg += sym_sort(S_PA_S(a));
+ */
+             inc_vector_co(S_PA_S(a),S_PA_LI(b));
+             for (j=S_PA_LI(a)-1;j>=0;j--)
+--- ./ga.c.orig	2007-12-06 09:30:01.000000000 -0700
++++ ./ga.c	2012-05-08 08:29:01.773059259 -0600
+@@ -632,7 +632,7 @@ static INT co_posorneg_sum(a,b,what) OP
+     else if (what == 0L)
+         erg += vertikal_sum(S_V_L(a),c);
+     erg += copy(a,d);
+-    erg += sort(d);
++    erg += sym_sort(d);
+     erg += m_il_p(S_V_II(d,S_V_LI(d)-1L),e); /* identitaet */
+     for (i=0L,k=0L,j=S_V_LI(d);i<S_P_LI(e);i++)
+         if (i+1L == S_V_II(d,k) )
+@@ -722,7 +722,7 @@ INT garnir(f,g,h,c) OP f,g,h,c;
+ 
+     j=0L;
+     erg += append(h,g,h2); 
+-    erg += sort(h2);
++    erg += sym_sort(h2);
+     for (i=0L;i<S_V_LI(g);i++)
+         {
+         erg += m_i_i(S_V_II(g,i),S_P_I(a,j));
+--- ./def.h.orig	2007-12-06 09:30:56.000000000 -0700
++++ ./def.h	2012-05-08 08:29:01.772059260 -0600
+@@ -3105,7 +3105,7 @@ extern INT Sn_wt();
+ extern INT so_character ();
+ extern INT so_dimension ();
+ extern OBJECTKIND s_o_k();
+-extern INT sort();
++extern INT sym_sort();
+ extern INT sort_rows_tableaux_apply();
+ extern INT sort_vector();
+ extern OBJECTSELF s_o_s();
+@@ -3271,7 +3271,7 @@ extern INT sub_default();
+ extern INT sub_part_part();
+ extern INT substitute_one_matrix ();
+ extern INT substitute_one_monopoly ();
+-extern INT sum();
++extern INT sym_sum();
+ extern INT sum_integervector();
+ extern INT sum_matrix();
+ extern INT sum_vector();

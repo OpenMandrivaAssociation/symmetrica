@@ -1,0 +1,1330 @@
+--- ./poly.c.orig	2007-12-06 09:30:24.000000000 -0700
++++ ./poly.c	2012-05-08 10:49:27.695834061 -0600
+@@ -297,7 +297,7 @@ INT objectwrite_monom(f,a) FILE *f; OP a
+ {
+     INT erg = OK;
+     COP("objectwrite_monom(1)",f);
+-    fprintf(f,"%ld ",(INT)MONOM);
++    fprintf(f,"%d ",(INT)MONOM);
+     erg += objectwrite(f,S_MO_K(a)); 
+     erg += objectwrite(f,S_MO_S(a)); 
+     ENDR("objectwrite_monom");
+@@ -2029,10 +2029,10 @@ INT tex_polynom(poly) OP poly;
+                 {
+                 hbool=(INT)0;
+                 if (S_M_IJI(z,i,j) >1L)
+-                    fprintf(texout," x_{%ld,%ld}^{%ld} ",
++                    fprintf(texout," x_{%d,%d}^{%d} ",
+                         i,j,S_M_IJI(z,i,j));
+                 else 
+-                    fprintf(texout," x_{%ld,%ld} ", i,j);
++                    fprintf(texout," x_{%d,%d} ", i,j);
+                 texposition += 15L;
+                 }
+             }
+@@ -2042,13 +2042,13 @@ INT tex_polynom(poly) OP poly;
+             {
+                 hbool=(INT)0;
+                 if (tex_poly_var == NUMERICAL) /* AK 090395 */
+-            fprintf(texout,"x_{%ld}",i+tex_poly_first_var_index);
++            fprintf(texout,"x_{%d}",i+tex_poly_first_var_index);
+                 else
+             fprintf(texout,"%c",(char)( 'a'+i+tex_poly_first_var_index));
+                 texposition ++;
+                 if (S_PO_SII(zeiger,i) != 1L)
+                 {
+-                    fprintf(texout,"^{%ld}",S_PO_SII(zeiger,i));
++                    fprintf(texout,"^{%d}",S_PO_SII(zeiger,i));
+                     texposition += 10L;
+                 };
+             };
+@@ -2948,11 +2948,11 @@ INT maple_polynom(poly) OP poly;
+         for (i= 0L ;i < S_PO_SLI(zeiger); i++)
+             if (S_PO_SII(zeiger,i) > 0L)
+             {
+-                fprintf(texout,"*x%ld",i+1);
++                fprintf(texout,"*x%d",i+1);
+                 texposition ++;
+                 if (S_PO_SII(zeiger,i) != 1L)
+                     {
+-                    fprintf(texout,"^%ld",S_PO_SII(zeiger,i));
++                    fprintf(texout,"^%d",S_PO_SII(zeiger,i));
+                     texposition += 10L;
+                     };
+             };
+--- ./nb.c.orig	2007-12-06 09:30:15.000000000 -0700
++++ ./nb.c	2012-05-08 10:41:40.497297377 -0600
+@@ -1402,7 +1402,7 @@ INT objectwrite_number(f,number) FILE *f
+ /* AK 200891 V1.3 */
+ {
+ #ifdef NUMBERTRUE
+-    fprintf(f," %ld\n",(INT)S_O_K(number));
++    fprintf(f," %d\n",(INT)S_O_K(number));
+     objectwrite(f,S_N_S(number));
+     switch (S_O_K(number))
+     {    
+@@ -1657,7 +1657,7 @@ INT nb_ende()
+ {
+ #ifdef CYCLOTRUE
+     if (number_mem != 0L)
+-        fprintf(stderr,"error in number memory %ld\n",number_mem);
++        fprintf(stderr,"error in number memory %d\n",number_mem);
+     return OK;
+ #endif
+ }
+@@ -1941,13 +1941,13 @@ static INT SCMPCO(self_type,coeff_type,r
+ 
+     init(MONOPOLY,result);
+     printeingabe("Length of list: ");  /* AK 080891 */
+-    scanf("%ld",&n);
++    scanf("%d",&n);
+     for (i=0L;i<n;i++)
+     {    
+-        sprintf(a,"%ld-th monomial (self) ",i);
++        sprintf(a,"%d-th monomial (self) ",i);
+         printeingabe(a);
+         scan(self_type,x);
+-        sprintf(a,"%ld-th monomial (koeff) ",i);
++        sprintf(a,"%d-th monomial (koeff) ",i);
+         printeingabe(a);
+         scan(coeff_type,y);
+         if (nullp(y))
+@@ -4906,7 +4906,7 @@ static INT setup_cyclotomic_table(filena
+             return(ERROR);
+         }
+     }
+-    if ( fscanf(f," %ld",&zzno_cyclos) == 0 || zzno_cyclos < 1L ||
++    if ( fscanf(f," %d",&zzno_cyclos) == 0 || zzno_cyclos < 1L ||
+         (zzcyclo_table
+         = (CYCLO_DATA *) SYM_calloc((int)zzno_cyclos,sizeof(CYCLO_DATA))
+         ) == NULL
+@@ -5077,11 +5077,11 @@ INT print_cyclo_table()
+ 
+     if (!cyclo_table_set)
+         return(ERROR);
+-    printf("Number of cyclo data on table: %ld\n",zzno_cyclos);
++    printf("Number of cyclo data on table: %d\n",zzno_cyclos);
+     ptr    = zzcyclo_table;
+     for (i=0L;i<zzno_cyclos;i++)
+     {    
+-        printf("Table item %ld: ",i);
++        printf("Table item %d: ",i);
+         print_cyclo_data(ptr);
+         ptr++;
+     }
+@@ -5100,7 +5100,7 @@ INT print_cyclo_list()
+     list_ptr    = zzcyclo_list;
+     while (list_ptr != NULL)
+     {    
+-        printf("List item %ld: ",i++);
++        printf("List item %d: ",i++);
+         print_cyclo_data((CYCLO_DATA *) S_L_S(list_ptr));
+         list_ptr    = S_L_N(list_ptr);
+     }
+@@ -5153,7 +5153,7 @@ INT save_cyclo_list(filename) char *file
+     else
+     {    
+         fseek(f,0L,0);
+-        fscanf(f,"%ld",&i);
++        fscanf(f,"%d",&i);
+         fseek(f,0L,2);
+         printf("Cyclo data being appended to file %s.\n",name);
+     }
+@@ -5170,7 +5170,7 @@ INT save_cyclo_list(filename) char *file
+         i++;
+     }
+     fseek(f,0L,0);
+-    fprintf(f,"%8ld",i);
++    fprintf(f,"%8d",i);
+     fclose(f);
+     return(OK);
+ }
+--- ./bruch.c.orig	2007-12-06 09:30:00.000000000 -0700
++++ ./bruch.c	2012-05-08 10:27:19.153254904 -0600
+@@ -43,7 +43,7 @@ INT bruch_ende()
+     if (no_banner != TRUE)
+     if (mem_counter_bruch != 0L)
+         {
+-        fprintf(stderr,"mem_counter_bruch = %ld\n",mem_counter_bruch);
++        fprintf(stderr,"mem_counter_bruch = %d\n",mem_counter_bruch);
+         erg += error("bruch memory not freed");
+         goto endr_ende;
+         }
+@@ -1957,7 +1957,7 @@ INT objectwrite_bruch(f,a) FILE *f; OP a
+ {
+     INT erg = OK;
+     CTO(BRUCH,"objectwrite_bruch(2)",a);
+-    fprintf(f,"%ld\n", (INT)BRUCH);
++    fprintf(f,"%d\n", (INT)BRUCH);
+     erg += objectwrite(f,S_B_O(a));
+     erg += objectwrite(f,S_B_U(a)); 
+     ENDR("objectwrite_bruch");
+--- ./lo.c.orig	2007-12-06 09:30:03.000000000 -0700
++++ ./lo.c	2012-05-08 10:36:57.032649024 -0600
+@@ -421,7 +421,7 @@ static INT locms1(lx) struct loc *lx;
+     }
+   if (cc) 
+     {
+-    fprintf(stderr,"cc=%ld %ld %ld %ld\n",cc,lx->w0,lx->w1,lx->w2);
++    fprintf(stderr,"cc=%d %d %d %d\n",cc,lx->w0,lx->w1,lx->w2);
+     error("internal error:LO7");
+     }
+   return(c);
+@@ -1512,7 +1512,7 @@ static INT ganzein(fp,x) FILE *fp; struc
+     char c;
+     
+ 
+-    fscanf(fp,"%ld",&i);
++    fscanf(fp,"%d",&i);
+     if (i <(INT)0) 
+         {
+         sgn = (signed char)-1;
+@@ -1521,7 +1521,7 @@ static INT ganzein(fp,x) FILE *fp; struc
+     ganzint(x,  i % gd.basis);
+     while ((c=getc(fp)) == (char) gd.folgezeichen)
+         {
+-        fscanf(fp,"%ld",&i);
++        fscanf(fp,"%d",&i);
+         if (i <(INT)0) 
+             {
+             return error("internal error LO14");
+@@ -1572,11 +1572,11 @@ static INT ganzfziffer(zd) struct zahlda
+     else    {
+         z = holeziffer(zd);
+         if (zd->ziffernzahl > 0) zd->mehr=TRUE; else zd->mehr=FALSE;
+-        sprintf(buffer,"%ld",z);
++        sprintf(buffer,"%d",z);
+         f0 = gd.basislaenge-strlen(buffer);
+         sprintf(zd->ziffer,"%s","000000000000");
+             /* max. 12 Nullen */
+-        sprintf(zd->ziffer + f0,"%ld",z);
++        sprintf(zd->ziffer + f0,"%d",z);
+         if (zd->mehr == TRUE)
+             {
+ 	    if (nofolgezeichen)
+@@ -1648,12 +1648,12 @@ static INT ganz1ziffer(zd,x) struct zahl
+         if (zd->mehr == TRUE)
+             {
+ 	    if (nofolgezeichen)
+-		  sprintf(zd->ziffer,"%s%ld",zd->ziffer,z);
++		  sprintf(zd->ziffer,"%s%d",zd->ziffer,z);
+             else 
+-		  sprintf(zd->ziffer,"%s%ld%c",zd->ziffer,z,gd.folgezeichen);
++		  sprintf(zd->ziffer,"%s%d%c",zd->ziffer,z,gd.folgezeichen);
+             }
+         else    
+-          sprintf(zd->ziffer,"%s%ld",zd->ziffer,z);
++          sprintf(zd->ziffer,"%s%d",zd->ziffer,z);
+         }
+     locrette(& xx.floc);
+     return(OK);
+@@ -4304,7 +4304,7 @@ INT objectwrite_longint(f,l) FILE *f; OP
+         goto owlende;
+         }
+ 
+-    fprintf(f," %ld ",LONGINT);
++    fprintf(f," %d ",LONGINT);
+     ls=S_O_S(l);
+     erg += ganzaus(f, ls.ob_longint); 
+     fprintf(f,"\n"); 
+@@ -4340,7 +4340,7 @@ INT debugprint_longint(a) OP a;
+     for (k=0L;k<doffset;k++) fprintf(stderr," ");
+     fprintf(stderr,"kind:22=longint\n");
+     for (k=0L;k<doffset;k++) fprintf(stderr," ");
+-    fprintf(stderr,"laenge = %ld\n",
++    fprintf(stderr,"laenge = %d\n",
+         c.ob_longint->laenge);
+     for (k=0L;k<doffset;k++) fprintf(stderr," ");
+     fprintf(stderr,"signum = %d\n",
+@@ -4349,7 +4349,7 @@ INT debugprint_longint(a) OP a;
+     while (alocx != NULL)
+         {
+         for (k=0L;k<doffset;k++) fprintf(stderr," ");
+-        fprintf(stderr,"%ld %ld %ld\n",alocx->w0,alocx->w1,alocx->w2);
++        fprintf(stderr,"%d %d %d\n",alocx->w0,alocx->w1,alocx->w2);
+         alocx= alocx->nloc;
+         }
+     return(OK);
+--- ./ma.c.orig	2007-12-06 09:30:04.000000000 -0700
++++ ./ma.c	2012-05-08 10:37:45.889588413 -0600
+@@ -611,7 +611,7 @@ ma:     erg = OK;
+             err = error("m_ilih_m:self == NULL ");
+             if (err==ERROR_EXPLAIN) 
+                 fprintf(stderr,
+-                        "I wanted a %ld  x %ld matrix", 
++                        "I wanted a %d  x %d matrix", 
+                         len,
+                         height
+                        ); 
+@@ -1631,25 +1631,25 @@ OP s_m_ij(a,i,j) OP a; INT i,j;
+     if (i < (INT)0)
+         {
+         debugprint(a);
+-        fprintf(stderr,"index = %ld\n",i);
++        fprintf(stderr,"index = %d\n",i);
+         error("s_m_ij:row index too small");
+         }
+     if (i >= s_m_hi(a))
+         {
+         debugprint(a);
+-        fprintf(stderr,"index = %ld\n",i);
++        fprintf(stderr,"index = %d\n",i);
+         error("s_m_ij:row index too big");
+         }
+     if (j >= s_m_li(a))
+         {
+         debugprint(a);
+-        fprintf(stderr,"index = %ld\n",j);
++        fprintf(stderr,"index = %d\n",j);
+         error("s_m_ij:column index too big");
+         }
+     if (j < (INT)0)
+         {
+         debugprint(a);
+-        fprintf(stderr,"index = %ld\n",j);
++        fprintf(stderr,"index = %d\n",j);
+         error("s_m_ij:column index too small");
+         }
+     return(s_m_s(a) + (s_m_li(a)*i+j) ); 
+@@ -1939,7 +1939,7 @@ INT objectwrite_matrix(fp,matrix) FILE *
+ {
+     INT i,j;
+ 
+-    fprintf(fp, " %ld ",MATRIX);
++    fprintf(fp, " %d ",MATRIX);
+     objectwrite(fp,S_M_H(matrix));
+     /* zuerst die hoehe */
+     objectwrite(fp,S_M_L(matrix));
+--- ./mo.c.orig	2007-12-06 09:30:09.000000000 -0700
++++ ./mo.c	2012-05-08 10:38:36.113526109 -0600
+@@ -3017,7 +3017,7 @@ static INT _append_dec(decomp,row,col,n,
+ 	info[1]=pz;
+ 	info[2]=row;
+ 	info[3]=col;
+-	fprintf(dfp,"%ld %ld %ld %ld \n ",info[0],info[1],info[2],info[3]);
++	fprintf(dfp,"%d %d %d %d \n ",info[0],info[1],info[2],info[3]);
+ 	j = info[2] * info[3];
+ 	for (i=(INT)0; i<j;i++)
+ 		fprintf(dfp,"%d ",(int)decomp[i]);
+@@ -3373,7 +3373,7 @@ INT moddg(prime,llambda,pi,dmat) OP prim
+ 		SYM_free(part);
+ 		SYM_free(darmat[0]); /* AK 020692 statt free(darmat) */
+ 		SYM_free(darmat[1]); /* AK 020692 statt free(darmat) */
+-		fprintf(stderr,"error-no = %ld\n",dim);
++		fprintf(stderr,"error-no = %d\n",dim);
+ 		return error("mo.c: internal MO-15");
+ 	}
+ 	m_ilih_m(dim,dim,dmat);
+@@ -4789,7 +4789,7 @@ INT dimension_mod(part,prim,res) OP part
+ 
+ 	if (S_I_I(prim) < (INT)0)
+ 	{
+-		fprintf(stderr,"number = %ld\n",S_I_I(prim));
++		fprintf(stderr,"number = %d\n",S_I_I(prim));
+ 		error("dimension_mod: prime number (2. parameter) is negativ");
+ 		goto endr_ende;
+ 	}
+@@ -4800,7 +4800,7 @@ INT dimension_mod(part,prim,res) OP part
+ 	}
+ 	if (not primep(prim))
+ 	{
+-		fprintf(stderr,"number = %ld\n",S_I_I(prim));
++		fprintf(stderr,"number = %d\n",S_I_I(prim));
+ 		error("dimension_mod: prime number (2. parameter) is not prime");
+ 		goto endr_ende;
+ 	}
+--- ./ta.c.orig	2012-05-08 10:25:45.974370525 -0600
++++ ./ta.c	2012-05-08 10:56:17.992325466 -0600
+@@ -29,7 +29,7 @@ INT tab_ende()
+     INT erg = OK;
+     if (mem_counter_tab != 0L)
+         {
+-        fprintf(stderr,"mem_counter_tab = %ld\n",mem_counter_tab);
++        fprintf(stderr,"mem_counter_tab = %d\n",mem_counter_tab);
+         erg += error("tab memory not freed");
+         }
+     return erg;
+@@ -313,7 +313,7 @@ INT objectwrite_tableaux(f,a) FILE *f; O
+     INT erg = OK;
+     CTO(TABLEAUX,"objectwrite_tableaux(2)",a);
+     COP("objectwrite_tableaux(1)",f);
+-    fprintf(f,"%ld ",(INT)S_O_K(a));
++    fprintf(f,"%d ",(INT)S_O_K(a));
+     erg += objectwrite(f,S_T_U(a));
+     erg += objectwrite(f,S_T_S(a));
+     ENDR("objectwrite_tableaux");
+@@ -460,12 +460,12 @@ INT tex_tableaux(a) OP a;
+                 fprintf(texout,"\\vrule height10pt depth3pt$");
+ /* s_t_iji statt S_T_IJI */
+             if (s_t_iji(a,S_PA_LI(S_T_U(a))-1-i,j) < 10L)
+-                fprintf(texout,"\\ %ld",
++                fprintf(texout,"\\ %d",
+ /* s_t_iji statt S_T_IJI */
+                     s_t_iji(a,S_PA_LI(S_T_U(a))-1-i,j));
+ /* s_t_iji statt S_T_IJI */
+             else if (s_t_iji(a,S_PA_LI(S_T_U(a))-1-i,j) < 100L)
+-                fprintf(texout,"%ld",
++                fprintf(texout,"%d",
+ /* s_t_iji statt S_T_IJI */
+                     s_t_iji(a,S_PA_LI(S_T_U(a))-1-i,j));
+             else return
+--- ./sc.c.orig	2007-12-06 09:30:34.000000000 -0700
++++ ./sc.c	2012-05-08 10:54:49.992434549 -0600
+@@ -1329,7 +1329,7 @@ INT objectwrite_symchar(fp,a) FILE *fp;
+ /* AK 260291 V1.2 */ /* AK 200891 V1.3 */
+     {
+     INT erg=OK;
+-    fprintf(fp,"%ld\n",(INT)SYMCHAR);
++    fprintf(fp,"%d\n",(INT)SYMCHAR);
+     erg += objectwrite(fp,S_SC_D(a));
+     erg += objectwrite(fp,S_SC_P(a));
+     erg += objectwrite(fp,S_SC_W(a));
+--- ./list.c.orig	2007-12-06 09:30:03.000000000 -0700
++++ ./list.c	2012-05-08 10:35:15.808774591 -0600
+@@ -31,7 +31,7 @@ INT list_ende()
+     if (no_banner != TRUE)
+     if (mem_counter_list != 0L)
+         {
+-        fprintf(stderr,"mem_counter_list = %ld\n",mem_counter_list);
++        fprintf(stderr,"mem_counter_list = %d\n",mem_counter_list);
+         erg += error("list memory not freed");
+         goto endr_ende;
+         }
+@@ -1127,7 +1127,7 @@ INT objectwrite_list(f,a) FILE *f; OP a;
+ /* AK 210690 V1.1 */ /* AK 100591 V1.2 */
+ /* AK 060891 V1.3 */
+ {
+-    fprintf(f,"%ld ", (INT)S_O_K(a));
++    fprintf(f,"%d ", (INT)S_O_K(a));
+     if (S_L_S(a) == NULL) /* 100591 */
+         fprintf(f,"%ld\n",0L);
+     else    {
+@@ -1151,7 +1151,7 @@ INT objectread_list(f,a) FILE *f; OP a;
+ /* AK 060891 V1.3 */
+ {
+     INT i;
+-    fscanf(f,"%ld",&i);
++    fscanf(f,"%d",&i);
+     if (i == 0L) 
+         b_sn_l(NULL,NULL,a);
+     else if (i == 1L)
+@@ -1161,7 +1161,7 @@ INT objectread_list(f,a) FILE *f; OP a;
+         }
+     else
+         return error("objectread_list: wrong format (1) ");
+-    fscanf(f,"%ld",&i);
++    fscanf(f,"%d",&i);
+     if (i == 0L) 
+         return OK;
+     else if (i == 1L) 
+--- ./sb.c.orig	2007-12-06 09:30:34.000000000 -0700
++++ ./sb.c	2012-05-08 10:54:36.240451596 -0600
+@@ -880,7 +880,7 @@ gedruckt werden nur die stellen die vers
+             (i <S_SCH_SLI(b)) ; i++ )
+         {
+             if (S_SCH_SII(x,i)==S_SCH_SII(b,i)) printf(".,");
+-            else printf("%ld,",S_SCH_SII(b,i));
++            else printf("%d,",S_SCH_SII(b,i));
+             zeilenposition += 2L;
+         }
+         printf("]\n");
+@@ -890,7 +890,7 @@ gedruckt werden nur die stellen die vers
+             (i <S_SCH_SLI(b)) ; i++ )
+         {
+             if (S_SCH_SII(x,i)==S_SCH_SII(b,i)) printf(".,");
+-            else printf("%ld,",S_SCH_SII(x,i));
++            else printf("%d,",S_SCH_SII(x,i));
+             zeilenposition = 0L;
+         }
+         printf("]\n\n");
+@@ -1417,13 +1417,13 @@ INT tex_2schubert_monom_summe(b) OP b;
+             
+             if (S_PO_SII(z,i) == (INT)1)
+                 {
+-                fprintf(texout,"$ (x_%ld - y_%ld) $ ",j,k-j);
++                fprintf(texout,"$ (x_%d - y_%d) $ ",j,k-j);
+                 texposition += (INT)10;
+                 }
+             else
+             if (S_PO_SII(z,i) > (INT)1)
+                 {
+-                fprintf(texout,"$ (x_%ld - y_%ld)^%ld $ ",j,k-j,S_PO_SII(z,i));
++                fprintf(texout,"$ (x_%d - y_%d)^%d $ ",j,k-j,S_PO_SII(z,i));
+                 texposition += (INT)10;
+                 }
+ 
+--- ./hash.c.orig	2007-12-06 09:30:02.000000000 -0700
++++ ./hash.c	2012-05-08 10:30:45.577109820 -0600
+@@ -585,10 +585,10 @@ INT print_stat_hashtable(a) OP a;
+ /* AK 0602002 */
+ {
+     INT i;
+-    printf("entries = %ld size = %ld\n",S_V_II(a,S_V_LI(a)),S_V_LI(a));
++    printf("entries = %d size = %d\n",S_V_II(a,S_V_LI(a)),S_V_LI(a));
+     printf("entires per slot (>1 == collision)\n");
+     for (i=0;i<S_V_LI(a);i++)
+-        printf(" %ld ",(EMPTYP(S_V_I(a,i)) ? -S_V_II(a,i) : S_V_LI(S_V_I(a,i)) ) );
++        printf(" %d ",(EMPTYP(S_V_I(a,i)) ? -S_V_II(a,i) : S_V_LI(S_V_I(a,i)) ) );
+     printf("\n");
+     return OK;
+ }
+--- ./vc.c.orig	2007-12-06 09:30:49.000000000 -0700
++++ ./vc.c	2012-05-08 10:57:24.640242851 -0600
+@@ -47,7 +47,7 @@ INT vec_ende()
+     if (no_banner != TRUE)
+     if (mem_counter_vec != (INT)0)
+         {
+-        fprintf(stderr,"mem_counter_vec = %ld\n",mem_counter_vec);
++        fprintf(stderr,"mem_counter_vec = %d\n",mem_counter_vec);
+         erg += error("vec memory not freed");
+         }
+ #ifdef UNDEF
+@@ -1461,7 +1461,7 @@ OP s_v_i(a,i) OP a; INT i;
+     INT j;
+     if (i<(INT)0) 
+         { 
+-        fprintf(stderr,"index = %ld\n",i);
++        fprintf(stderr,"index = %d\n",i);
+         error("s_v_i:negative index"); 
+         return(NULL); 
+         }
+@@ -1469,14 +1469,14 @@ OP s_v_i(a,i) OP a; INT i;
+         {
+         if (i > (j=s_v_li(a)) ) 
+         { 
+-        fprintf(stderr,"index = %ld dimension = %ld\n",i,j);
++        fprintf(stderr,"index = %d dimension = %d\n",i,j);
+         error("s_v_i hashtable:index too big"); 
+         return(NULL); 
+         }
+         }
+     else if (i >= (j=s_v_li(a)) ) 
+         { 
+-        fprintf(stderr,"index = %ld dimension = %ld\n",i,j);
++        fprintf(stderr,"index = %d dimension = %d\n",i,j);
+         error("s_v_i:index too big"); 
+         return(NULL); 
+         }
+@@ -1633,7 +1633,7 @@ INT sprint_integervector(t,a) char *t; O
+     for (i=0;i<S_V_LI(a);i++)
+         {
+         if (i>0) { sprintf(t,","); t++; }
+-        sprintf(t,"%ld",S_V_II(a,i));
++        sprintf(t,"%d",S_V_II(a,i));
+         t += intlog(S_V_I(a,i));
+         if (S_V_II(a,i) < 0) t++;
+         }
+@@ -1716,7 +1716,7 @@ INT objectwrite_bv(filename,vec) FILE *f
+     size_t n;
+     COP("objectwrite_bv(1)",filename);
+     COP("objectwrite_bv(2)",vec);
+-    fprintf(filename," %ld ",S_O_K(vec));
++    fprintf(filename," %d ",S_O_K(vec));
+     objectwrite(filename,S_V_L(vec));
+     n = fwrite(S_V_S(vec),(size_t)1,(size_t)S_BV_LI(vec),filename);
+     if (n != S_BV_LI(vec))
+@@ -1737,7 +1737,7 @@ INT objectwrite_vector(filename,vec) FIL
+     INT erg = OK;
+     COP("objectwrite_vector(1)",filename);
+     COP("objectwrite_vector(2)",vec);
+-    fprintf(filename," %ld ",S_O_K(vec));
++    fprintf(filename," %d ",S_O_K(vec));
+ 
+     erg += objectwrite(filename,S_V_L(vec));
+ 
+--- ./rest.c.orig	2012-05-08 10:25:45.977370522 -0600
++++ ./rest.c	2012-05-08 10:52:26.479612446 -0600
+@@ -432,7 +432,7 @@ INT error_during_computation_code(t,code
+ /* AK 170698 V2.0 */
+     {
+     INT err;
+-    fprintf(stderr,"function: %s code: %ld \n",t,code);
++    fprintf(stderr,"function: %s code: %d \n",t,code);
+     err = error("error during computation");
+     return ERROR;
+     }
+@@ -2551,11 +2551,11 @@ INT tex_integer(a) OP a;
+     if (S_I_I(a) <0L) texposition++; 
+     if (ts == 0L)
+     {
+-        fprintf(texout," $%ld$ ",S_I_I(a)); 
++        fprintf(texout," $%d$ ",S_I_I(a)); 
+         texposition += 4L;
+     }
+     else
+-        fprintf(texout," %ld ",S_I_I(a)); 
++        fprintf(texout," %d ",S_I_I(a)); 
+     return OK;
+     }
+ 
+@@ -2625,7 +2625,7 @@ INT objectread_integer(filename,obj) FIL
+     INT eingabe;
+     INT erg = OK;
+     COP("objectread_integer(1)",filename);
+-    fscanf(filename,"%ld",&eingabe); 
++    fscanf(filename,"%d",&eingabe); 
+     M_I_I(eingabe,obj); 
+     ENDR("objectread_integer");
+     }
+@@ -2636,7 +2636,7 @@ INT objectwrite_integer(filename,obj) FI
+     { 
+     INT erg = OK;
+     COP("objectwrite_integer(1)",filename);
+-    fprintf(filename," %ld %ld\n",(INT)INTEGER,S_I_I(obj)); 
++    fprintf(filename," %d %d\n",(INT)INTEGER,S_I_I(obj)); 
+     ENDR("objectwrite_integer");
+     }
+ 
+@@ -2646,7 +2646,7 @@ INT sprint_integer(string,a) char *strin
+     {
+     INT erg = OK;
+     CTO(INTEGER,"sprint_integer(2)",a);
+-    sprintf(string,"%ld",S_I_I(a)); 
++    sprintf(string,"%d",S_I_I(a)); 
+     ENDR("sprint_integer");
+     }
+ 
+@@ -2675,7 +2675,7 @@ INT fprint_integer(f,a) FILE *f; OP a;
+         if (S_I_I(a) < 0) 
+             zeilenposition++;  /* for the leading sign */
+         }
+-    fprintf(f,"%ld",S_I_I(a)); 
++    fprintf(f,"%d",S_I_I(a)); 
+     if (f == stdout) 
+         if (zeilenposition >= row_length)
+             { fprintf(f,"\n"); zeilenposition = 0; }
+@@ -2748,7 +2748,7 @@ INT test_integer()
+     println(b);
+     printf("test_integer:comp_integer_integer(a,b)\n");
+     erg=comp_integer_integer(a,b);
+-    printf("%ld\n",erg);
++    printf("%d\n",erg);
+     printf("test_integer:binom(a=5L,b=4L,c)\n");
+     m_i_i(5L,a); 
+     m_i_i(4L,b); 
+@@ -3179,7 +3179,7 @@ INT init(kind,a) OBJECTKIND kind; OP a;
+             break;
+ #endif /* VECTORTRUE */
+         default: 
+-            fprintf(stderr,"kind = %ld\n",(INT) kind);
++            fprintf(stderr,"kind = %d\n",(INT) kind);
+             return error("init:wrong kind");
+         }
+     
+@@ -3554,15 +3554,15 @@ INT test_callocobject()
+ /* AK 270689 V1.0 */ /* AK 181289 V1.1 */ /* AK 210891 V1.3 */
+     {
+     OP a = callocobject();
+-    printf("test_callocobject: sizeof(OP)=%d\n",sizeof(a));
+-    printf("test_callocobject: sizeof(*OP)=%d\n",sizeof(*a));
+-    printf("test_callocobject: sizeof(struct object)=%d\n",sizeof(struct object));
++    printf("test_callocobject: sizeof(OP)=%zu\n",sizeof(a));
++    printf("test_callocobject: sizeof(*OP)=%zu\n",sizeof(*a));
++    printf("test_callocobject: sizeof(struct object)=%zu\n",sizeof(struct object));
+     if (a==NULL) {
+         printf("test_callocobject: NULL-object");return(OK);
+         }
+-    printf("test_callocobject: a=%ld\n",(INT)a);
+-    printf("test_callocobject: a->ob_kind=%ld\n",(INT) (a->ob_kind));
+-    printf("test_callocobject: a->ob_self.ob_INT=%ld\n",
++    printf("test_callocobject: a=%p\n",a);
++    printf("test_callocobject: a->ob_kind=%d\n",(INT) (a->ob_kind));
++    printf("test_callocobject: a->ob_self.ob_INT=%d\n",
+                         (a->ob_self).ob_INT);
+     SYM_free(a);
+     return(OK);
+@@ -3573,9 +3573,9 @@ INT debugprint_object(a) OP a;
+     {
+     if (a==NULL) {
+     fprintf(stderr,"debugprint_object: NULL-object");return(OK);}
+-    fprintf(stderr,"debugprint_object: a=%ld\n",(INT)a);
+-    fprintf(stderr,"debugprint_object: kind=%ld\n",(INT)a->ob_kind);
+-    fprintf(stderr,"debugprint_object: self.INT=%ld\n",a->ob_self.ob_INT);
++    fprintf(stderr,"debugprint_object: a=%p\n",a);
++    fprintf(stderr,"debugprint_object: kind=%d\n",(INT)a->ob_kind);
++    fprintf(stderr,"debugprint_object: self.INT=%d\n",a->ob_self.ob_INT);
+     return(OK);
+     }
+ 
+@@ -3775,7 +3775,7 @@ INT objectwrite_skewpartition(f,a) FILE
+     {
+     INT erg = OK;
+     COP("objectwrite_skewpartition(1)",f);
+-    fprintf(f, "%ld ", (INT)SKEWPARTITION);
++    fprintf(f, "%d ", (INT)SKEWPARTITION);
+     erg += objectwrite(f,S_SPA_G(a));
+     erg += objectwrite(f,s_spa_k(a));
+     ENDR("objectwrite_skewpartition");
+@@ -4640,7 +4640,7 @@ INT scan_laurent(ergebnis) OP ergebnis;
+   INT l,erg=OK;
+   INT i;
+   erg += printeingabe("length of vector ");
+-  scanf("%ld",&l);
++  scanf("%d",&l);
+   if(l<2L)
+   {
+     erg+= m_il_nla(2L,ergebnis);
+--- ./gra.c.orig	2007-12-06 09:30:01.000000000 -0700
++++ ./gra.c	2012-05-08 10:30:09.073155103 -0600
+@@ -385,7 +385,7 @@ INT latex_verband(a) OP a;
+ {
+ 	INT i,j;
+ 
+-	fprintf(texout,"\n\\begin{picture}(%d,%d)\n",XDIM,YDIM);
++	fprintf(texout,"\n\\begin{picture}(%ld,%ld)\n",XDIM,YDIM);
+ 	for (i=s_v_li(s_gr_koor(a))-1; i>=0 ;i--)
+ 	{
+ 		fprintf(texout,"\\put(%d,%d){ \n",s_i_i(s_gr_xkoori(a,i)),
+--- ./zykelind.c.orig	2007-12-06 09:30:52.000000000 -0700
++++ ./zykelind.c	2012-05-08 10:57:55.321204819 -0600
+@@ -4244,9 +4244,9 @@ INT frip_latex_zykelind(a) OP a;
+       if (!nullp(S_V_I(S_PO_S(monom),i))) 
+       {
+         if (!einsp(S_V_I(S_PO_S(monom),i))) 
+-        printf("x_{%d}^{%d}\n",i+1L,S_V_II(S_PO_S(monom),i));
++        printf("x_{%ld}^{%d}\n",i+1L,S_V_II(S_PO_S(monom),i));
+         else
+-        printf("x_{%d}\n",i+1L);
++        printf("x_{%ld}\n",i+1L);
+       }
+       if (S_PO_N(monom)!=NULL) printf("+");
+       monom=S_PO_N(monom);
+--- ./hiccup.c.orig	2007-12-06 09:30:02.000000000 -0700
++++ ./hiccup.c	2012-05-08 10:32:03.129013615 -0600
+@@ -310,7 +310,7 @@ INT tex_hecke_monopoly(a) OP a;
+ 			else
+ 				tex (S_MO_K(S_L_S(z)));
+ 		}
+-		fprintf (texout," q^{%ld} ",S_I_I(S_MO_S(S_L_S(z))));
++		fprintf (texout," q^{%d} ",S_I_I(S_MO_S(S_L_S(z))));
+ 		z = S_L_N(z);
+ 		if (z != NULL)
+ 		{
+@@ -3181,14 +3181,14 @@ INT check_hecke_generators (vector, p_ro
+ 
+ 	for (i=0;i<ni;i++)
+ 	{
+-		printf("%ldth square is ",i+1);
++		printf("%dth square is ",i+1);
+ 		switch (check_hecke_quadratic(s_v_i(vector,i),p_root,flag))
+ 		{
+ 		case 0:
+ 			printf("O.K!\n");
+ 			break;
+ 		case 1:
+-			printf("O.K for primitive %ldth root!\n",S_I_I(p_root));
++			printf("O.K for primitive %dth root!\n",S_I_I(p_root));
+ 			break;
+ 		case 2:
+ 			printf("codswallop!\n");
+@@ -3200,14 +3200,14 @@ INT check_hecke_generators (vector, p_ro
+ 
+ 	for (i=1;i<ni;i++)
+ 	{
+-		printf("%ldth braid is ",i);
++		printf("%dth braid is ",i);
+ 		switch (check_braid(s_v_i(vector,i-1),s_v_i(vector,i),p_root,flag))
+ 		{
+ 		case 0:
+ 			printf("O.K!\n");
+ 			break;
+ 		case 1:
+-			printf("O.K for primitive %ldth root!\n",S_I_I(p_root));
++			printf("O.K for primitive %dth root!\n",S_I_I(p_root));
+ 			break;
+ 		case 2:
+ 			printf("codswallop!\n");
+@@ -3220,14 +3220,14 @@ INT check_hecke_generators (vector, p_ro
+ 	for (i=2;i<ni;i++)
+ 		for (j=0;j<i-1;j++)
+ 		{
+-			printf("(%ld,%ld)th commute is ",i+1,j+1);
++			printf("(%d,%d)th commute is ",i+1,j+1);
+ 			switch (check_commute(s_v_i(vector,i),s_v_i(vector,j),p_root,flag))
+ 			{
+ 			case 0:
+ 				printf("O.K!\n");
+ 				break;
+ 			case 1:
+-				printf("O.K for primitive %ldth root!\n",S_I_I(p_root));
++				printf("O.K for primitive %dth root!\n",S_I_I(p_root));
+ 				break;
+ 			case 2:
+ 				printf("codswallop!\n");
+--- ./bar.c.orig	2012-05-08 10:25:45.977370522 -0600
++++ ./bar.c	2012-05-08 10:26:38.009305958 -0600
+@@ -798,7 +798,7 @@ INT starting_bar_schubert(n,res) OP n,re
+     FILE *fp;
+     char s[100];
+ 
+-    sprintf(s,"startbarschubert%ld",S_I_I(n));
++    sprintf(s,"startbarschubert%d",S_I_I(n));
+     fp = fopen(s,"r");
+     if (fp != NULL)
+         {
+--- ./ff.c.orig	2007-12-06 09:30:01.000000000 -0700
++++ ./ff.c	2012-05-08 10:29:21.426214210 -0600
+@@ -925,13 +925,13 @@ static INT UE_scan(Koerperzeiger) INT **
+     Zeichen = (char *) SYM_calloc(500,sizeof(char));
+     printeingabe("input of a finite field element");
+     printeingabe("degree of extension");
+-    scanf("%ld",&i);
++    scanf("%d",&i);
+     SYM_free((char *) Koerperelement);
+     Koerperelement = (INT *) UE_malloc((i+1)*sizeof(INT));
+     *Koerperzeiger = Koerperelement;
+     for (j=(INT)0;j<=i;j++)
+         Koerperelement[j] = (INT)0;
+-    fprintf(stderr,"input   of %ld entries, seperated by comma",i);
++    fprintf(stderr,"input   of %d entries, seperated by comma",i);
+     fprintf(stderr,"\nmissing entries are 0\n");
+     scanf("%s",Zeichen);
+     j = (INT)1;
+@@ -1006,12 +1006,12 @@ static INT UE_fZeige(f,Koerperzeiger) IN
+     Koerperelement = *Koerperzeiger;
+     for (i=(INT)1;i<Koerperelement[0];i++)
+         {
+-        fprintf(f,"%ld,",Koerperelement[i]);
++        fprintf(f,"%d,",Koerperelement[i]);
+         if (f == stdout) {
+             zeilenposition += (intlog_int(Koerperelement[i])+1);
+             }
+         }
+-    fprintf(f,"%ld",Koerperelement[Koerperelement[0]]);
++    fprintf(f,"%d",Koerperelement[Koerperelement[0]]);
+     if (f == stdout) {
+         zeilenposition += intlog_int(Koerperelement[Koerperelement[0]]);
+         }
+@@ -2069,7 +2069,7 @@ INT debugprint_ff(a) OP a;
+     fprintf(stderr,"ff:INT vektor =\n");
+     for (i=(INT)0;i<doffset;i++) fputc(' ',stderr);
+     for (i=(INT)0;i<= *iv;i++)
+-        fprintf(stderr,"%ld ",*(iv+i));
++        fprintf(stderr,"%d ",*(iv+i));
+     fprintf(stderr,"\n");
+     return OK;
+ }
+@@ -2165,10 +2165,10 @@ INT objectwrite_ff(f,a) FILE *f; OP a;
+     CTO(FF,"objectwrite_ff(2)",a);
+     {
+     INT i,*ip;
+-    fprintf(f,"%ld\n%ld\n%ld ", 
++    fprintf(f,"%d\n%d\n%d ", 
+               (INT)FF,S_FF_CI(a),S_FF_DI(a));
+     ip = S_FF_IP(a);
+-    for (i=0;i<S_FF_DI(a);i++) fprintf(f,"%ld ",ip[i+1]);
++    for (i=0;i<S_FF_DI(a);i++) fprintf(f,"%d ",ip[i+1]);
+     fputc('\n',f);
+     }
+     ENDR("objectwrite_bruch");
+@@ -2184,10 +2184,10 @@ INT objectread_ff(f,a) FILE *f; OP a;
+     COP("objectread_ff(1)",f);
+     {
+     INT i,j,*ip;
+-    fscanf(f,"%ld",&i);Charakteristik=i;
+-    fscanf(f,"%ld",&i);UE_Erw_Grad=i;
++    fscanf(f,"%d",&i);Charakteristik=i;
++    fscanf(f,"%d",&i);UE_Erw_Grad=i;
+     init_ff(a);ip = S_FF_IP(a);
+-    for (j=0;j<UE_Erw_Grad;j++) { fscanf(f,"%ld",&i); ip[j+1]=i;}
++    for (j=0;j<UE_Erw_Grad;j++) { fscanf(f,"%d",&i); ip[j+1]=i;}
+     ip[0]=UE_Erw_Grad;
+     M_I_I(Charakteristik,S_V_I(a,0));
+     }
+--- ./ko.c.orig	2007-12-06 09:30:02.000000000 -0700
++++ ./ko.c	2012-05-08 10:34:38.480820897 -0600
+@@ -224,7 +224,7 @@ INT tex_kostka(koma,vector) OP koma,vect
+         texposition = (INT)0;
+         for (j=(INT)0;j<=i;j++)
+             { fprintf (texout," & ");
+-            fprintf(texout," %ld ",S_M_IJI(koma,i,j)); };
++            fprintf(texout," %d ",S_M_IJI(koma,i,j)); };
+         for (j=i+1L;j<S_V_LI(vector);j++) 
+              fprintf(texout," & ");
+         fprintf(texout," \\cr \n");
+--- ./io.c.orig	2007-12-06 09:30:02.000000000 -0700
++++ ./io.c	2012-05-08 10:34:23.328839693 -0600
+@@ -89,7 +89,7 @@ INT printobjectkind(a) OP a;
+     case HASHTABLE: fprintf(stderr,"hashtable\n");break;
+     case INTEGERVECTOR: fprintf(stderr,"integervector\n");break;
+     case (OBJECTKIND) 0: fprintf(stderr,"empty-object\n");break;
+-    default: fprintf(stderr," %ld ",S_O_K(a));
++    default: fprintf(stderr," %d ",S_O_K(a));
+         fprintf(stderr,"unknown\n");
+         break;
+         };
+@@ -517,7 +517,7 @@ INT scan(kind,obj) OBJECTKIND kind; OP o
+ #endif /* WORDTRUE */
+         default:
+             {
+-            fprintf(stderr,"kind = %ld\n",kind);
++            fprintf(stderr,"kind = %d\n",kind);
+             erg += error("scan:wrong type");
+             goto endr_ende;
+             }
+@@ -541,7 +541,7 @@ INT skip(t,kind) char *t; OBJECTKIND kin
+             }
+         default:
+             {
+-            fprintf(stderr,"kind = %ld\n",kind);
++            fprintf(stderr,"kind = %d\n",kind);
+             erg += error("skip:wrong type");
+             goto endr_ende;
+             }
+@@ -595,7 +595,7 @@ INT sscan(t,kind,obj) char *t; OBJECTKIN
+ 
+         default:
+             {
+-            fprintf(stderr,"kind = %ld\n",kind);
++            fprintf(stderr,"kind = %d\n",kind);
+             error("sscan:wrong type");
+             return(ERROR);
+             }
+@@ -730,7 +730,7 @@ OBJECTKIND scanobjectkind()
+     if (i++ == 4L)fprintf(stderr,"\n"),i=0L;
+ 
+     fprintf(stderr,"\nwhat kind:? ");
+-    scanf("%ld",&erg);
++    scanf("%d",&erg);
+     if (erg == 46) erg = BARPERM;
+     return (OBJECTKIND)erg;
+     }
+@@ -746,7 +746,7 @@ INT objectread(f,obj) FILE *f; OP obj;
+     COP("objectread(2)",obj);
+ 
+     FREESELF(obj);
+-    i=fscanf(f,"%ld",&c);
++    i=fscanf(f,"%d",&c);
+     SYMCHECK(i!=1,"objectread:could not read datatype");
+     kind = (OBJECTKIND)c;
+     switch(kind)
+@@ -840,7 +840,7 @@ INT objectread(f,obj) FILE *f; OP obj;
+             break;
+ #endif /* VECTORTRUE */
+         default:  
+-            fprintf(stderr,"kind = %ld\n",kind);
++            fprintf(stderr,"kind = %d\n",kind);
+             erg += error("objectread:wrong type"); 
+             goto oe;
+         };
+@@ -1138,7 +1138,7 @@ static INT write_polynom(poly) OP    pol
+                         if(S_M_IJI(s_po_s(z),k,l) == 1L)
+                             fprintf(texout,"x_{%ld %ld} ",k+1L,l+1L);
+                         else
+-                            fprintf(texout,"x_{%ld %ld}^{%ld} ",k+1L,l+1L,S_M_IJI(s_po_s(z),k,l));
++                            fprintf(texout,"x_{%ld %ld}^{%d} ",k+1L,l+1L,S_M_IJI(s_po_s(z),k,l));
+             }
+             if(S_PO_N(z) != NULL)    
+             {
+--- ./perm.c.orig	2012-05-08 10:25:45.981370517 -0600
++++ ./perm.c	2012-05-08 10:47:41.928965166 -0600
+@@ -14,12 +14,12 @@ static INT co_co();
+ static INT co_co_2();
+ #define CPT(typ,text,a) CTO(PERMUTATION,text,a);if (S_P_K(a) != typ) \
+ fprintf(stderr,\
+-"wrong typ of permutation in %s\n typ should be %ld and it was %ld\n "\
++"wrong typ of permutation in %s\n typ should be %d and it was %d\n "\
+ ,text,typ,S_O_K(a));
+ #define CPTT(typ,typ2,text,a) CTO(PERMUTATION,text,a);if \
+ ((S_P_K(a) != typ)&&(S_P_K(a) != typ2)) \
+ fprintf(stderr,\
+-"wrong typ of permutation in %s\n typ should be %ld or %ld and it was %ld\n "\
++"wrong typ of permutation in %s\n typ should be %d or %d and it was %d\n "\
+ ,text,typ,typ2,S_O_K(a));
+ 
+ 
+@@ -123,7 +123,7 @@ INT perm_ende()
+     erg += freeall(old_kranz_tafel);
+     if (mem_counter_perm != 0L)
+         {
+-        fprintf(stderr,"mem_counter_perm = %ld\n",mem_counter_perm);
++        fprintf(stderr,"mem_counter_perm = %d\n",mem_counter_perm);
+         erg += error("permutation memory not freed");
+         }
+     if (next_perm_v != NULL)
+@@ -1439,7 +1439,7 @@ INT tex_lc(perm) OP perm;
+         texposition += 2L;
+         for (i=0L;i<S_V_LI(perm);i++)
+         { 
+-            fprintf(texout,"%ld",S_V_II(perm,i)); 
++            fprintf(texout,"%d",S_V_II(perm,i)); 
+             texposition ++; 
+         }
+         fprintf(texout,"$\\ "); 
+@@ -1450,7 +1450,7 @@ INT tex_lc(perm) OP perm;
+         texposition += 4L;
+         for (i=0L;i<S_V_LI(perm);i++)
+         { 
+-            fprintf(texout,"%ld",S_V_II(perm,i));
++            fprintf(texout,"%d",S_V_II(perm,i));
+             if (i != S_V_LI(perm)-1L) fprintf(texout,",");
+             texposition += 3L; 
+         }
+@@ -1476,7 +1476,7 @@ INT tex_permutation(perm) OP perm;
+         texposition += 3L;
+         for (i=0L;i<S_P_LI(perm);i++)
+         { 
+-            fprintf(texout,"%ld",S_P_II(perm,i)); 
++            fprintf(texout,"%d",S_P_II(perm,i)); 
+             texposition += 1L; 
+         }
+         fprintf(texout,"$\\ "); 
+@@ -1487,7 +1487,7 @@ INT tex_permutation(perm) OP perm;
+         for (i=0L;i<S_P_LI(perm);i++)
+         { 
+             texposition += 3L; 
+-            fprintf(texout,"%ld",S_P_II(perm,i));
++            fprintf(texout,"%d",S_P_II(perm,i));
+             if (i != S_P_LI(perm)-1L) fprintf(texout,",");
+         }
+         fprintf(texout,")$\\ "); 
+@@ -1512,7 +1512,7 @@ INT tex_rz(obj) OP obj;
+ 
+     fprintf(texout,"\\ $");
+     for (i=0L;i<S_V_LI(obj);i++)
+-        fprintf(texout,"\\sigma_{%ld}\\ ",S_V_II(obj,i));
++        fprintf(texout,"\\sigma_{%d}\\ ",S_V_II(obj,i));
+     fprintf(texout,"$\\ ");
+     ENDR("tex_rz");
+ }
+@@ -1580,7 +1580,7 @@ INT eq_permutation(a,b) OP a,b;
+         }
+     else
+         {
+-        fprintf(stderr,"kind a = %ld\nkind b = %ld\n", S_P_K(a), S_P_K(b));
++        fprintf(stderr,"kind a = %d\nkind b = %d\n", S_P_K(a), S_P_K(b));
+         debugprint(b);
+         return error("eq_permutation:different kinds of permutations");
+         }
+@@ -1601,7 +1601,7 @@ INT comp_permutation(a,b) OP a, b;
+         return comp(S_P_S(a),S_P_S(b));
+     else
+         {
+-        fprintf(stderr,"kind a = %ld\nkind b = %ld\n", S_P_K(a), S_P_K(b));
++        fprintf(stderr,"kind a = %d\nkind b = %d\n", S_P_K(a), S_P_K(b));
+         debugprint(b);
+         return error("comp_permutation:different kinds of permutations");
+         }
+@@ -2537,7 +2537,7 @@ INT objectread_permutation(filename,perm
+     CTO(EMPTY,"objectwrite_permutation(2)",perm);
+ 
+     erg += b_ks_p((OBJECTKIND)0, callocobject(),perm);
+-    fscanf(filename,"%ld",&i); kind = (OBJECTKIND)i;
++    fscanf(filename,"%d",&i); kind = (OBJECTKIND)i;
+     C_P_K(perm,kind);
+     erg += objectread(filename,S_P_S(perm));
+     ENDR("objectread_permutation");
+@@ -2552,8 +2552,8 @@ INT objectwrite_permutation(filename,per
+     COP("objectwrite_permutation(1)",filename);
+     CTO(PERMUTATION,"objectwrite_permutation(2)",perm);
+ 
+-    fprintf(filename,"%ld\n",(INT)PERMUTATION);
+-    fprintf(filename,"%ld\n",(INT)S_P_K(perm));
++    fprintf(filename,"%d\n",(INT)PERMUTATION);
++    fprintf(filename,"%d\n",(INT)S_P_K(perm));
+     erg += objectwrite(filename,S_P_S(perm));
+     ENDR("objectwrite_permutation");
+ }
+--- ./rh.c.orig	2007-12-06 09:30:32.000000000 -0700
++++ ./rh.c	2012-05-08 11:02:29.550632890 -0600
+@@ -96,11 +96,13 @@ static int del_var(v) struct REIHE_varia
+ static int copy_poly(a,b) struct REIHE_poly **b,*a;
+ /* AK 150393 */
+ {
+-   if (a==NULL)
+-      return (int)(*b = NULL);
++   if (a==NULL) {
++      *b = NULL;
++      return 0;
++   }
+    *b = (struct REIHE_poly *) SYM_malloc(sizeof(struct REIHE_poly));
+    if (*b == NULL)
+-      return (int)no_memory;
++      return (int)no_memory();
+    (*b)->grad = a->grad;
+ 
+    copy_mon(a->unten, & (*b)->unten);
+@@ -110,11 +112,13 @@ static int copy_poly(a,b) struct REIHE_p
+ static int copy_mon(a,b) struct REIHE_mon **b,*a;
+ /* AK 150393 */
+ {
+-   if (a==NULL)
+-      return (int)(*b = NULL);
++   if (a==NULL) {
++      *b = NULL;
++      return 0;
++   }
+    *b = (struct REIHE_mon *) SYM_malloc(sizeof(struct REIHE_mon));
+    if (*b == NULL)
+-      return (int)no_memory;
++      return (int)no_memory();
+    (*b)->coeff=callocobject();
+    copy(a->coeff, (*b)->coeff);
+    copy_mon(a->ref, & (*b)->ref);
+@@ -124,11 +128,13 @@ static int copy_mon(a,b) struct REIHE_mo
+ static int copy_var(a,b) struct REIHE_variablen **b,*a;
+ /* AK 150393 */
+ {
+-   if (a == NULL)
+-      return (int)(*b = NULL);
++   if (a == NULL) {
++      *b = NULL;
++      return 0;
++   }
+    *b = (struct REIHE_variablen *) SYM_malloc(sizeof(struct REIHE_variablen));
+    if (*b == NULL)
+-      return (int)no_memory;
++      return (int)no_memory();
+    (*b)->index = a->index;
+    (*b)->potenz = a->potenz;
+    copy_var(a->weiter, & (*b)->weiter);
+@@ -136,11 +142,13 @@ static int copy_var(a,b) struct REIHE_va
+ 
+ static int copy_rh(a,b) REIHE_zeiger a,*b;
+ {
+-   if (a == NULL)
+-      return (int)(*b = NULL);
++   if (a == NULL) {
++      *b = NULL;
++      return 0;
++   }
+    *b = (struct reihe *) SYM_malloc(sizeof(struct reihe));
+    if (*b == NULL)
+-      return (int)no_memory;
++      return (int)no_memory();
+    (*b)->exist = a->exist;
+    (*b)->reihenart = a->reihenart;
+    (*b)->z = a->z;
+@@ -179,7 +187,7 @@ static struct REIHE_variablen *new_drei(
+ static int free_drei(a) char *a; { SYM_free(a); }
+ static int free_zwei(a) char *a; { SYM_free(a); }
+ static int free_eins(a) char *a; { SYM_free(a); }
+-static int free_null_debug(a) char *a; { printf("free_null:%ld\n",a); SYM_free(a); }
++static int free_null_debug(a) char *a; { printf("free_null:%p\n",a); SYM_free(a); }
+ static int free_null(a) char *a; { SYM_free(a); }
+ 
+ static struct REIHE_mon *new_zwei()
+@@ -200,7 +208,7 @@ static struct reihe *new_null() {
+ static struct reihe *new_null_debug() { 
+    struct reihe *a;
+    a = (struct reihe*) SYM_calloc(1,sizeof(struct reihe)); 
+-   printf("new_null:%ld\n",a);
++   printf("new_null:%p\n",a);
+    return a; }
+ 
+ static INT initial_reihe(adress) REIHE_zeiger* adress;
+@@ -1160,7 +1168,7 @@ static INT monomausgabe(f, m) struct REI
+          do
+          {
+             if (zeigvar->potenz>0L)
+-               fprintf(f," X%ld^%ld",zeigvar->index,zeigvar->potenz);
++               fprintf(f," X%d^%d",zeigvar->index,zeigvar->potenz);
+ 	if (f == stdout) zeilenposition+=5L; /* AK 040893 */
+             zeigvar=zeigvar->weiter;
+ 
+@@ -2288,11 +2296,11 @@ static int debugprint_rh(a) REIHE_zeiger
+       return    fprintf(stderr,"struct reihe==NULL\n");
+       }
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+-   fprintf(stderr,"exist = %ld\n",a->exist);
++   fprintf(stderr,"exist = %d\n",a->exist);
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+-   fprintf(stderr,"reihenart = %ld\n",a->reihenart);
++   fprintf(stderr,"reihenart = %d\n",a->reihenart);
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+-   fprintf(stderr,"z = %ld\n",a->z);
++   fprintf(stderr,"z = %d\n",a->z);
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+    fprintf(stderr,"x = \n"); 
+    doffset += 2L;
+@@ -2328,7 +2336,7 @@ static int debugprint_rh_poly(a) struct
+       return    fprintf(stderr,"struct reihe_poly==NULL\n");
+       }
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+-   fprintf(stderr,"grad = %ld\n",a->grad);
++   fprintf(stderr,"grad = %d\n",a->grad);
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+    fprintf(stderr,"unten = \n"); 
+    doffset += 2L;
+@@ -2379,9 +2387,9 @@ static int debugprint_rh_var(a) struct R
+       return    fprintf(stderr,"struct reihe_var==NULL\n");
+       }
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+-   fprintf(stderr,"index = %ld\n",a->index);
++   fprintf(stderr,"index = %d\n",a->index);
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+-   fprintf(stderr,"potenz = %ld\n",a->potenz);
++   fprintf(stderr,"potenz = %d\n",a->potenz);
+    for (i=0L;i<doffset;i++) fputc(' ',stderr);
+    fprintf(stderr,"weiter = \n"); 
+    doffset += 2L;
+--- ./part.c.orig	2012-05-08 10:25:45.983370514 -0600
++++ ./part.c	2012-05-08 10:43:08.273188487 -0600
+@@ -817,7 +817,7 @@ INT fprint_partition(f,partobj) FILE
+         if (S_PA_II(partobj,i)<10)
+         /*AK partitionsteile kleiner 10 werden als Zahlen geschrieben */
+         { 
+-            fprintf(f,"%ld",S_PA_II(partobj,i));
++            fprintf(f,"%d",S_PA_II(partobj,i));
+             if (f == stdout) zeilenposition++; 
+         }
+         else if (S_PA_II(partobj,i)<16)
+@@ -830,7 +830,7 @@ INT fprint_partition(f,partobj) FILE
+         else    {
+             /* A.K. sonst werden die Teile als zahl mit 
+             abschliessenden senkrechten Strich geschrieben */
+-            fprintf(f,"%c%ld",'|',S_PA_II(partobj,i));
++            fprintf(f,"%c%d",'|',S_PA_II(partobj,i));
+             if(f==stdout) 
+                 zeilenposition+=(1+intlog(S_PA_I(partobj,i)));
+             };
+@@ -864,7 +864,7 @@ INT sprint_partition(f,partobj) char
+         if (S_PA_II(partobj,i)<10)
+         /*AK partitionsteile kleiner 10 werden als Zahlen geschrieben */
+         { 
+-            sprintf(f,"%ld",S_PA_II(partobj,i));
++            sprintf(f,"%d",S_PA_II(partobj,i));
+             f++; 
+         }
+         else if (S_PA_II(partobj,i)<16)
+@@ -877,7 +877,7 @@ INT sprint_partition(f,partobj) char
+         else    {
+             /* A.K. sonst werden die Teile als zahl mit 
+             abschliessenden senkrechten Strich geschrieben */
+-            sprintf(f,"%c%ld",'|',S_PA_II(partobj,i));
++            sprintf(f,"%c%d",'|',S_PA_II(partobj,i));
+             f+=(1+intlog(S_PA_I(partobj,i)));
+             };
+     ENDR("sprint_partition");
+@@ -1325,7 +1325,7 @@ INT first_partition(n,part) OP n,part;
+ 
+     if (S_I_I(n) < (INT)0) /* AK 020692 */
+         {
+-        fprintf(stderr,"input = %ld\n",S_I_I(n));
++        fprintf(stderr,"input = %d\n",S_I_I(n));
+         erg += error("first_partition:input < 0");
+         }
+     else if (S_I_I(n) == (INT)0) /* AK 020692 */
+@@ -2312,7 +2312,7 @@ INT part_ende()
+     if (no_banner != TRUE)
+     if (mem_counter_part != (INT)0)
+         {
+-        fprintf(stderr,"mem_counter_part = %ld\n",mem_counter_part);
++        fprintf(stderr,"mem_counter_part = %d\n",mem_counter_part);
+         erg += error("memory problem with partitions");
+         }
+ 
+@@ -3115,7 +3115,7 @@ INT objectread_partition(filename,part)
+     INT erg = OK;
+     COP("objectread_partition(1)",filename);
+     COP("objectread_partition(2)",part);
+-    fscanf(filename,"%ld",&kind);
++    fscanf(filename,"%d",&kind);
+     erg += b_ks_pa((OBJECTKIND)kind, callocobject(),part);
+     erg += objectread(filename,S_PA_S(part));
+     if (S_PA_K(part) == VECTOR) 
+@@ -3132,8 +3132,8 @@ INT objectwrite_partition(filename,part)
+     INT erg = OK;
+     COP("objectwrite_partition(1)",filename);
+     COP("objectwrite_partition(2)",part);
+-    fprintf(filename,"%ld\n",(INT)PARTITION);
+-    fprintf(filename,"%ld\n",(INT)S_PA_K(part));
++    fprintf(filename,"%d\n",(INT)PARTITION);
++    fprintf(filename,"%d\n",(INT)S_PA_K(part));
+     erg += objectwrite(filename,S_PA_S(part));
+     ENDR("objectwrite_partition");
+ }
+--- ./def.h.orig	2012-05-08 10:25:45.985370512 -0600
++++ ./def.h	2012-05-08 10:26:02.612349880 -0600
+@@ -2,14 +2,9 @@
+ /* INT should always be 4 byte */
+ #ifndef DEF_H
+ 
+-
+-#ifdef __alpha
+-typedef  int INT;
+-typedef unsigned  int  UINT;
+-#else /* __alpha */
+-typedef long INT;
+-typedef unsigned long UINT;
+-#endif /* __alpha */
++#include <stdint.h>
++typedef int32_t INT;
++typedef uint32_t UINT;
+ 
+ #include <stdio.h>
+ #include <memory.h>
+--- ./macro.h.orig	2007-12-06 09:30:56.000000000 -0700
++++ ./macro.h	2012-05-08 10:26:02.613349879 -0600
+@@ -1,6 +1,10 @@
+ /* file: macro.h symmetrica source code */
+ #ifndef MACRO_H
+ 
++#include <stdint.h>
++typedef int32_t INT;
++typedef uint32_t UINT;
++
+ #ifdef SYMMAGMA
+ #define SYM_MALLOC(a) mem_malloc(a)
+ #else
+--- ./de.c.orig	2007-12-06 09:30:00.000000000 -0700
++++ ./de.c	2012-05-08 10:28:13.825298071 -0600
+@@ -506,11 +506,11 @@ INT debugprint(a) OP a;
+     /* abschluss immer mit newline */
+     {
+     case 0: 
+-        fprintf(stderr,"kind:0=empty self=%ld\n",s_o_s(a).ob_INT);
++        fprintf(stderr,"kind:0=empty self=%d\n",s_o_s(a).ob_INT);
+         break;
+     case 1: 
+         fprintf(stderr,"kind:1=integer value:");
+-        fprintf(stderr,"%ld\n",s_i_i(a));
++        fprintf(stderr,"%d\n",s_i_i(a));
+         return(OK);
+ #ifdef VECTORTRUE
+         case 120199: case 31:
+@@ -532,7 +532,7 @@ INT debugprint(a) OP a;
+         for (i=0L;i<s_v_li(a);i++)
+         {
+         for (k=0L;k<doffset;k++) fprintf(stderr," ");
+-        fprintf(stderr,"%s %ld-komponente:\n",text,i);
++        fprintf(stderr,"%s %d-komponente:\n",text,i);
+         doffset += 2L;
+         debugprint(s_v_i(a,i));
+         doffset -= 2L;
+@@ -559,7 +559,7 @@ INT debugprint(a) OP a;
+ #ifdef BRUCHTRUE
+     case 4: 
+         {
+-        fprintf(stderr,"kind:4=bruch gekuerzt=%ld oben:\n", s_b_i(a));
++        fprintf(stderr,"kind:4=bruch gekuerzt=%d oben:\n", s_b_i(a));
+         doffset += 2L;
+         debugprint(s_b_o(a));
+         doffset -= 2L;
+@@ -661,7 +661,7 @@ INT debugprint(a) OP a;
+         for (j=0L;j<s_m_li(a);j++)
+         {
+         for (k=0L;k<doffset;k++) fprintf(stderr," ");
+-        fprintf(stderr,"%s %ld %ld-komponente:\n",text,i,j);
++        fprintf(stderr,"%s %d %d-komponente:\n",text,i,j);
+         doffset += 2L;
+         debugprint(s_m_ij(a,i,j));
+         doffset -= 2L;
+@@ -726,7 +726,7 @@ INT debugprint(a) OP a;
+         doffset += 2L;
+         C_O_K(a,VECTOR);
+         for (k=0L;k<doffset;k++) fprintf(stderr," ");
+-        fprintf(stderr,"length = number of bits = %ld\n",s_v_li(a));
++        fprintf(stderr,"length = number of bits = %d\n",s_v_li(a));
+         C_O_K(a,BITVECTOR);
+         doffset -= 2L;
+                 return(OK);
+@@ -739,7 +739,7 @@ INT debugprint(a) OP a;
+     case 36: return debugprint_reihe(a);
+ #endif /* REIHETRUE */
+     default: 
+-        fprintf(stderr,"kind:%ld unknown\n",s_o_k(a));
++        fprintf(stderr,"kind:%d unknown\n",s_o_k(a));
+         break;
+     }
+     return OK;

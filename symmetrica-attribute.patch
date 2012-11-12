@@ -1,0 +1,1051 @@
+--- ./nb.c.orig	2012-05-08 13:45:58.267473287 -0600
++++ ./nb.c	2012-05-08 13:46:03.721466904 -0600
+@@ -9,18 +9,7 @@
+ 
+ #include "def.h"
+ #include "macro.h"
+-
+-int myisspace (int i) 
+-	{
+-        if (i=='\t') return 1;
+-        if (i=='\n') return 1;
+-        if (i=='\r') return 1;
+-        if (i=='\v') return 1;
+-        if (i=='\f') return 1;
+-        if (i==' ') return 1;
+-	return 0;
+-	}
+-
++#include <ctype.h>
+ 
+ #define INIT_CYCLO(a) \
+ do {\
+@@ -4892,7 +4881,7 @@ static INT setup_cyclotomic_table(filena
+         char_ptr    = name;
+         while( (*char_ptr = fgetc(stdin)) != '\n')
+         {    
+-            if (myisspace(*char_ptr)) continue;
++            if (isspace(*char_ptr)) continue;
+             char_ptr++; 
+             i++;
+             if (i > (INT)48) break;
+@@ -5123,7 +5112,7 @@ INT save_cyclo_list(filename) char *file
+         char_ptr    = name;
+         while( (*char_ptr = fgetc(stdin)) != '\n')
+         {    
+-            if (myisspace(*char_ptr)) continue;
++            if (isspace(*char_ptr)) continue;
+             char_ptr++; 
+             i++;
+             if (i > (INT)48) break;
+--- ./lo.c.orig	2012-05-08 13:45:58.270473284 -0600
++++ ./lo.c	2012-05-08 13:46:03.722466903 -0600
+@@ -54,7 +54,7 @@ static INT ganzquores();
+ static INT ganzsadd();
+ static INT ganzsmul();
+ static INT ganzsquores();
+-static INT ganzvergleich();
++static INT ganzvergleich() __attribute__((pure));
+ static INT ganz1ziffer();
+ static INT intganz();
+ static INT locadd();
+@@ -4361,7 +4361,6 @@ INT sscan_longint(t,a) char *t; OP a;
+     INT vz=(INT)1;
+     char c;
+     OP zehn, faktor;
+-    int SYM_isdigit();
+ 
+     COP("sscan_longint(1)",t);
+     CTO(EMPTY,"sscan_longint(2)",a);
+--- ./ma.c.orig	2012-05-08 13:45:58.271473283 -0600
++++ ./ma.c	2012-05-08 13:46:03.724466901 -0600
+@@ -5,6 +5,7 @@
+ #ifdef MATRIXTRUE
+ static struct matrix * callocmatrix();
+ static INT scan_matrix_co();
++static INT co_050995(a) __attribute__((pure));
+ 
+ static INT transform_matrix(a,f,b) OP a,b; INT (*f)();
+ {
+--- ./zyk.c.orig	2012-05-08 13:45:54.469477733 -0600
++++ ./zyk.c	2012-05-08 13:46:03.725466900 -0600
+@@ -34,6 +34,8 @@
+ static INT colltypes();
+ static INT strongen();
+ static INT polyasub();
++static INT gcd() __attribute__((const));
++static INT eulerfunc() __attribute__((const));
+ 
+ /* Die beiden naechsten Routinen werden zur Berechnung des 
+  * Zykelindikators der zyklischen Gruppe benoetigt
+--- ./mo.c.orig	2012-05-08 13:45:58.277473275 -0600
++++ ./mo.c	2012-05-08 13:46:03.727466897 -0600
+@@ -43,14 +43,14 @@ static INT k_alzyk();
+ static INT j_zyk();
+ static INT inzeil();
+ static INT zykschnitt ();
+-static INT leer();
+-static INT a_teilmenge_b();
+-static INT setmin();
++static INT leer() __attribute__((pure));
++static INT a_teilmenge_b() __attribute__((pure));
++static INT setmin() __attribute__((pure));
+ static INT _teste_r_mat_dim();
+ static INT _red_r_mat();
+ static INT _diff();
+ static INT _kleiner();
+-static INT _ggT();
++static INT _ggT() __attribute__((const));
+ static INT _v_eintrag();
+ static INT _ber_dim();
+ static INT _dimension();
+@@ -58,14 +58,14 @@ static INT _fakul();
+ static INT _ber_lambdas();
+ static INT _r_induk();
+ static INT _num_part();
+-static INT _part_reg();
++static INT _part_reg() __attribute__((pure));
+ static INT _nexpart();
+ static INT _k_modgauss();
+-static INT COEFF();
++static INT COEFF() __attribute__((const));
+ static INT _search_dec();
+ static INT _k_zweikonmat();
+-static INT invp();
+-static INT fak();
++static INT invp() __attribute__((const));
++static INT fak() __attribute__((const));
+ static INT nexgitt();
+ static INT _ber_idx_pelem();
+ static INT darmod();
+--- ./plet.c.orig	2007-12-06 09:30:22.000000000 -0700
++++ ./plet.c	2012-05-08 13:46:03.728466896 -0600
+@@ -19,7 +19,7 @@
+ #define signed
+ #endif 
+ 
+-static INT cmp();
++static INT cmp() __attribute__((pure));
+ static INT ins_sch_lst();
+ static INT ins_sc_lst();
+ /* static INT ins_s_lst(); */
+@@ -30,7 +30,7 @@ static struct liste * proprt();
+ static INT fct_sch_prt_srt();
+ static struct liste * pro_lg();
+ static INT fct_sch_lg_srt();
+-static INT poids();
++static INT poids() __attribute__((pure));
+ static INT free_lst();
+ static INT free_newton();
+ static INT shuffle_sig();
+@@ -260,8 +260,6 @@ static INT conjug(tab,j,ve)
+     return OK;
+ }
+ 
+-int SYM_strlen();
+-
+ 
+ static INT operer(n,ttp,deg,baf,cof,liste,parite)
+     signed char n,ttp,deg,*baf,parite;
+--- ./na.c.orig	2007-12-06 09:30:14.000000000 -0700
++++ ./na.c	2012-05-08 13:46:03.729466895 -0600
+@@ -590,6 +590,7 @@ static void ltmult( pi , t1 , t2 ) int *
+ *    Vorzeichen
+ *
+ ********************************************************************/
++static int sign() __attribute__((pure));
+ static int sign(pi ) int *pi;
+ /* AK 191289 V1.1 */
+ /* TF 011289 */ /* AK 210891 V1.3 */
+--- ./vc.c.orig	2012-05-08 13:45:58.283473269 -0600
++++ ./vc.c	2012-05-08 13:46:03.731466893 -0600
+@@ -4,6 +4,7 @@
+ /* SYMMETRICA vector.c */
+ /* AK 160986 */
+ 
++static INT maxpart_bitvector_part_i() __attribute__((pure));
+ struct vector * callocvectorstruct();
+ static INT charvalue_bit_co();
+ static INT mem_counter_vec=0;
+@@ -601,7 +602,6 @@ INT sscan_integervector(t,a) OP a; char
+ {
+     INT i,n,erg = OK;
+     char *v,*w;
+-    int SYM_isdigit();
+ 
+     COP("sscan_integervector(1)",t);
+     COP("sscan_integervector(2)",a);
+--- ./bar.c.orig	2012-05-08 13:45:58.289473261 -0600
++++ ./bar.c	2012-05-08 13:46:03.731466893 -0600
+@@ -299,7 +299,7 @@ INT strong_check_barp(a) OP a;
+ /* AK 230695 */
+ {
+     OP h;
+-    INT i,SYM_abs();
++    INT i;
+ 
+     if (a == NULL)
+         return FALSE;
+--- ./ff.c.orig	2012-05-08 13:45:58.290473260 -0600
++++ ./ff.c	2012-05-08 13:46:03.732466892 -0600
+@@ -45,9 +45,9 @@ static INT UE_add();
+ static INT UE_fZeige();
+ static INT UE_invers();
+ static INT UE_ist_gleich();
+-static INT UE_ist_eins();
++static INT UE_ist_eins() __attribute__((pure));
+ static INT UE_ist_null();
+-static INT UE_kgv();
++static INT UE_kgv() __attribute__((const));
+ static INT UE_mult();
+ static INT UE_negativ();
+ /* static INT UE_sqrt(); */
+--- ./sab.c.orig	2007-12-06 09:30:33.000000000 -0700
++++ ./sab.c	2012-05-08 13:46:03.734466888 -0600
+@@ -43,12 +43,12 @@ static INT get_BV();
+ static INT add_to_PROJ();
+ static INT    mhochexpo();
+ static INT TP();
+-static INT    get_nr_of_tupel();
+-static INT     lls_vgl();
+-static INT     ti_eq_tk();
++static INT    get_nr_of_tupel() __attribute__((pure));
++static INT     lls_vgl() __attribute__((pure));
++static INT     ti_eq_tk() __attribute__((pure));
+ static INT     get_axial_distance();
+ static INT     ti_eq_transpo_tk();
+-static INT     get_main_diag();
++static INT     get_main_diag() __attribute__((pure));
+ static INT D_calc();
+ static INT D_row_calc();
+ static INT transponiere();
+@@ -59,14 +59,14 @@ static INT cut_col_row();
+ static INT     ziffern_existieren();
+ static INT Pcut_col_row();
+ static INT createP();
+-static INT     lex_vgl();
++static INT     lex_vgl() __attribute__((pure));
+ static INT sortieren();
+ static INT zuweisen();
+ static INT _del();
+ static INT _ins();
+ static INT _kt();
+-static INT get_col();
+-static INT get_row();
++static INT get_col() __attribute__((pure));
++static INT get_row() __attribute__((pure));
+ static INT Pziffern_existieren();
+ static INT alpha_beta_tabs();
+ static INT get_submatrix();
+@@ -1551,7 +1551,6 @@ INT sdg(part,perm,D) OP      part,perm,D
+     INT     i;
+     INT     j;
+     INT erg = OK;
+-    INT    lls_vgl();
+     OP n,lehmer,HD,dim,t,inh;
+ 
+     CTO(PARTITION,"sdg(1)",part);
+@@ -1625,7 +1624,6 @@ static INT _xdg(nr,t,P,var)
+ {
+     INT     i,j,k;
+     INT     main_diag = 0L;
+-    INT     get_main_diag();
+     INT erg = OK;
+ 
+     for(i=0L;i<S_V_LI(t);++i)
+@@ -1810,9 +1808,6 @@ static INT     ti_eq_transpo_tk(nr,t_i,t
+ static INT     get_axial_distance(t_i,nr,dist)
+     OP      t_i; INT     nr; OP      dist;
+ {
+-    INT     get_row();
+-    INT     get_col();
+-
+     INT     i_r;
+     INT     j_r;
+     INT     i_s;
+@@ -1962,7 +1957,6 @@ INT odg(part,perm,D) OP  part,perm,D;
+ #ifdef DGTRUE
+     INT     i;
+     INT     j;
+-    INT    lls_vgl();
+     OP rz,HD,dim,t,inh;
+ 
+ 
+@@ -2351,7 +2345,6 @@ static INT TP(tupel,st,n,m,sperm,bperm)
+     INT    zeile        =    0L;
+     INT    spalte        =    0L;
+     INT    TP();
+-    INT    get_nr_of_tupel();
+     static    INT count     =     0L;
+     OP    htupel;
+ 
+--- ./rh.c.orig	2012-05-08 13:45:58.294473256 -0600
++++ ./rh.c	2012-05-08 13:46:03.735466886 -0600
+@@ -12,7 +12,7 @@ static INT zuwachs=(INT)5;
+ #define new_var new_drei
+ #define new_mon new_zwei
+ static INT co_261093();
+-static INT reihevergleich ();
++static INT reihevergleich () __attribute__((pure));
+ static INT Eins_eingabe();
+ static INT co_eingabe();
+ static INT Random_eingabe();
+@@ -43,8 +43,8 @@ static INT ergaenze_reihe();
+ static int card_typ_reihe();
+ static  int card_reihe();
+ static int variablenvergleich();
+-static int monomvergleich ();
+-static int monomgrad();
++static int monomvergleich () __attribute__((pure));
++static int monomgrad() __attribute__((pure));
+ static INT monommult();
+ static INT monomausgabe();
+ static  int trans_reihe_in_monom();
+--- ./part.c.orig	2012-05-08 13:45:58.295473255 -0600
++++ ./part.c	2012-05-08 13:46:03.736466885 -0600
+@@ -3985,7 +3985,6 @@ static INT sscan_partition_co(t,a) OP a;
+ /* AK 230298 V2.0 */
+ {
+     INT i,n,erg = OK;
+-    int SYM_isdigit();
+     char *v,*w;
+ 
+     COP("sscan_partition(1)",t);
+--- ./def.h.orig	2012-05-08 13:45:58.297473252 -0600
++++ ./def.h	2012-05-08 13:47:48.238344563 -0600
+@@ -716,8 +716,8 @@ extern INT binom_small();
+ extern INT binom_small();
+ extern INT binom_small();
+ extern INT b_i_pa();
+-extern INT bit();
+-extern INT bit_longint();
++extern INT bit() __attribute__((pure));
++extern INT bit_longint() __attribute__((pure));
+ extern INT b_kl_pa();
+ extern INT b_ksd_n();
+ extern INT b_ks_o();
+@@ -740,9 +740,9 @@ extern INT brouwerlowerbound();
+ extern INT brouwerupperbound();
+ extern INT bruch_anfang();
+ extern INT bruch_ende();
+-extern INT bruch_not_scalar();
+-extern INT bru_comp();
+-extern INT bruhat_comp_perm();
++extern INT bruch_not_scalar() __attribute__((pure));
++extern INT bru_comp() __attribute__((pure));
++extern INT bruhat_comp_perm() __attribute__((pure));
+ extern INT bruhat_ideal();
+ extern INT bruhat_ideal_strong();
+ extern INT bruhat_ideal_weak();
+@@ -778,8 +778,8 @@ extern INT B_W();
+ extern INT b_wpd_sc();
+ extern INT calculate_fixed_point_number();
+ extern OP callocobject();
+-extern INT callocobject_anfang();
+-extern INT callocobject_ende();
++extern INT callocobject_anfang() __attribute__((const));
++extern INT callocobject_ende() __attribute__((const));
+ extern OP callocobject_fast();
+ extern OP callocobject_magma();
+ extern INT cardinality_pgkq();
+@@ -791,7 +791,7 @@ extern INT cast_apply_homsym();
+ extern INT cast_apply_integer();
+ extern INT cast_apply();
+ extern INT cast_apply_matrix();
+-extern INT cast_apply_monom();
++extern INT cast_apply_monom() __attribute__((const));
+ extern INT cast_apply_monomial();
+ extern INT cast_apply_monopoly();
+ extern INT cast_apply_part();
+@@ -902,8 +902,8 @@ extern INT columns_standardise_tableau (
+ extern INT column_standardise_tableau ();
+ extern INT columnwordoftableaux();
+ extern INT comp();
+-extern INT comp_bigr_bigr();
+-extern INT comp_bigr_perm();
++extern INT comp_bigr_bigr() __attribute__((pure));
++extern INT comp_bigr_perm() __attribute__((pure));
+ extern INT comp_bruch();
+ extern INT comp_bruch_scalar();
+ extern INT comp_bv();
+@@ -912,12 +912,12 @@ extern INT comp_colex_schurmonom();
+ extern INT comp_colex_vector();
+ extern INT comp_cyclo();
+ extern INT comp_ff();
+-extern INT comp_galois();
++extern INT comp_galois() __attribute__((pure));
+ extern INT comp_integer();
+-extern INT comp_integer_integer();
+-extern INT comp_integermatrix();
++extern INT comp_integer_integer() __attribute__((pure));
++extern INT comp_integermatrix() __attribute__((pure));
+ extern INT comp_integervector();
+-extern INT comp_kranztafel();
++extern INT comp_kranztafel() __attribute__((pure));
+ extern INT complete_complete_plet();
+ extern INT complete_schur_plet();
+ extern INT complex_conjugate();
+@@ -928,22 +928,22 @@ extern INT comp_longint();
+ extern INT comp_longint_integer();
+ extern INT comp_matrix();
+ extern INT comp_monom();
+-extern INT comp_monomelmsym();
+-extern INT comp_monomhomsym();
+-extern INT comp_monommonomial();
+-extern INT comp_monompowsym();
+-extern INT comp_monomschur();
++extern INT comp_monomelmsym() __attribute__((pure));
++extern INT comp_monomhomsym() __attribute__((pure));
++extern INT comp_monommonomial() __attribute__((pure));
++extern INT comp_monompowsym() __attribute__((pure));
++extern INT comp_monomschur() __attribute__((pure));
+ extern INT comp_monomvector_monomvector();
+ extern INT comp_monopoly();
+ extern INT comp_number();
+ extern INT comp_numeric_vector();
+ extern INT comp_partition();
+-extern INT comp_partition_partition();
++extern INT comp_partition_partition() __attribute__((pure));
+ extern INT comp_permutation();
+-extern INT comp_permutation_pol();
++extern INT comp_permutation_pol() __attribute__((pure));
+ extern INT comp_polynom();
+ extern INT comp_polynom_scalar();
+-extern INT comp_reihe();
++extern INT comp_reihe() __attribute__((pure));
+ extern INT comp_skewpartition();
+ extern INT comp_skewpartition_skewpartition();
+ extern INT comp_sqrad();
+@@ -975,8 +975,8 @@ extern INT conjugate_powsym();
+ extern INT conjugate_schur();
+ extern INT conjugate_tableaux();
+ extern INT conjugation();
+-extern INT consp_polynom();
+-extern INT contain_comp_part();
++extern INT consp_polynom() __attribute__((pure));
++extern INT contain_comp_part() __attribute__((pure));
+ extern INT content();
+ extern INT content_polynom();
+ extern INT content_tableaux();
+@@ -1118,7 +1118,7 @@ extern INT double_apply_longint();
+ extern INT double_hashtable();
+ extern INT ds_j_wt();
+ extern INT durfee_size_part();
+-extern INT dynamicp();
++extern INT dynamicp() __attribute__((pure));
+ extern INT dz_i_wt();
+ extern INT E_eingabe();
+ extern INT eins();
+@@ -1128,15 +1128,15 @@ extern INT eins_ff_given_q();
+ extern INT eins_galois();
+ extern INT eins_gr_given_c_d();
+ extern INT einsp();
+-extern INT einsp_bitvector();
++extern INT einsp_bitvector() __attribute__((pure));
+ extern INT einsp_bruch();
+ extern INT einsp_cyclotomic();
+-extern INT einsp_ff();
+-extern INT einsp_galois();
+-extern INT einsp_integer();
+-extern INT einsp_integervector();
++extern INT einsp_ff() __attribute__((pure));
++extern INT einsp_galois() __attribute__((pure));
++extern INT einsp_integer() __attribute__((pure));
++extern INT einsp_integervector() __attribute__((pure));
+ extern INT einsp_kranz();
+-extern INT einsp_longint();
++extern INT einsp_longint() __attribute__((pure));
+ extern INT einsp_matrix();
+ extern INT einsp_monopoly();
+ extern INT einsp_permutation();
+@@ -1150,7 +1150,7 @@ extern INT einsp_vector();
+ extern INT elementarp_permutation();
+ extern INT elementary_schur_plet();
+ extern INT embedding_mod_into_ord();
+-extern INT empty_listp();
++extern INT empty_listp() __attribute__((pure));
+ extern INT empty_object();
+ extern INT emptyp();
+ extern INT ende();
+@@ -1160,13 +1160,13 @@ extern INT eq();
+ extern INT eq_cyclotomic();
+ extern INT eq_fieldobject_int();
+ extern INT eq_integer();
+-extern INT eq_integervector_integervector();
+-extern INT eq_longint_longint();
++extern INT eq_integervector_integervector() __attribute__((pure));
++extern INT eq_longint_longint() __attribute__((pure));
+ extern INT eq_matrix();
+-extern INT eq_monomsymfunc();
+-extern INT eq_monomsymfunchash();
+-extern INT eq_partition();
+-extern INT eq_partition_partition();
++extern INT eq_monomsymfunc() __attribute__((pure));
++extern INT eq_monomsymfunchash() __attribute__((pure));
++extern INT eq_partition() __attribute__((pure));
++extern INT eq_partition_partition() __attribute__((pure));
+ extern INT eq_permutation();
+ extern INT eq_sqrad();
+ extern INT equal_2_error();
+@@ -1184,8 +1184,8 @@ extern INT eval_monopoly();
+ extern INT eval_polynom_dir_prod();
+ extern INT eval_polynom();
+ extern INT even();
+-extern INT even_integer();
+-extern INT even_longint();
++extern INT even_integer() __attribute__((pure));
++extern INT even_longint() __attribute__((pure));
+ extern INT even_partition();
+ extern INT even_permutation();
+ extern INT exchange_alphabets();
+@@ -1197,7 +1197,7 @@ extern INT factorize_integer();
+ extern INT fakul_longintresult();
+ extern INT fakul();
+ extern INT fastrectr();
+-extern INT fatal_error();
++extern void fatal_error() __attribute__((noreturn));
+ extern INT ferrers();
+ extern INT ferrers_partition();
+ extern INT ferrers_skewpartition();
+@@ -1227,7 +1227,7 @@ extern OP findmin_monomial();
+ extern OP findmin_powsym();
+ extern OP findmin_schur();
+ extern OP find_monomial();
+-extern INT find_non_root_standard_pos ();
++extern INT find_non_root_standard_pos () __attribute__((pure));
+ extern INT find_non_rowstandard_pos ();
+ extern OP find_schur();
+ extern INT find_tab_entry();
+@@ -1344,7 +1344,7 @@ extern INT from_loesung_to_minimaldistan
+ extern INT from_loesung_to_minimaldistanz();
+ extern INT from_loesung_to_weightenumerator();
+ extern INT from_loesung_to_weightenumerator();
+-extern INT fusedmemory();
++extern INT fusedmemory() __attribute__((const));
+ extern INT galois_anfang();
+ extern INT galois_ende();
+ extern INT ganzdiv();
+@@ -1409,7 +1409,7 @@ extern INT gewicht_wt();
+ extern INT Ggen();
+ extern INT ggt();
+ extern INT ggt_field_polynom();
+-extern INT ggt_i();
++extern INT ggt_i() __attribute__((const));
+ extern INT ggt_integer();
+ extern INT ggt_integer_integer();
+ extern INT ggt_integer_integer_slow();
+@@ -1457,8 +1457,8 @@ extern INT hall_littlewood_tafel();
+ extern INT hamming_distance_vector();
+ extern INT hash();
+ extern INT hash_ende();
+-extern INT hash_ff();
+-extern INT hash_integervector();
++extern INT hash_ff() __attribute__((pure));
++extern INT hash_integervector() __attribute__((pure));
+ extern INT hash_list();
+ extern INT hash_matrix();
+ extern INT hash_monompartition();
+@@ -1494,7 +1494,7 @@ extern INT _homtest();
+ extern INT hook_diagramm();
+ extern INT hook_length_augpart();
+ extern INT hook_length();
+-extern INT hookp();
++extern INT hookp() __attribute__((pure));
+ extern INT hook_partition();
+ extern INT hook_part();
+ extern INT horizontal_sum();
+@@ -1514,7 +1514,7 @@ extern INT inc_reihe();
+ extern INT inc_tableaux();
+ extern INT inc_vector();
+ extern INT inc_vector_co();
+-extern INT index_galois();
++extern INT index_galois() __attribute__((pure));
+ extern INT indexofpart();
+ extern INT index_vector();
+ extern INT index_vector_binary();
+@@ -1563,9 +1563,9 @@ extern INT integer_factor();
+ extern INT integer_factors_to_integer();
+ extern INT integer_primep();
+ extern INT integer_primep();
+-extern INT intlog();
+-extern INT intlog_int();
+-extern INT intlog_longint();
++extern INT intlog() __attribute__((pure));
++extern INT intlog_int() __attribute__((const));
++extern INT intlog_longint() __attribute__((pure));
+ extern INT invers();
+ extern INT invers_apply();
+ extern INT invers_apply_bruch();
+@@ -1649,7 +1649,7 @@ extern INT last_part_EXPONENT();
+ extern INT last_partition();
+ extern INT last_part_VECTOR();
+ extern INT last_permutation();
+-extern INT lastp_list();
++extern INT lastp_list() __attribute__((pure));
+ extern INT latex_glm_dar();
+ extern INT latex_kranztafel();
+ extern INT latex_line();
+@@ -1678,7 +1678,7 @@ extern INT l_elementary_schur_plet();
+ extern INT length();
+ extern INT length_bar();
+ extern INT length_bintree();
+-extern INT length_comp_part();
++extern INT length_comp_part() __attribute__((pure));
+ extern INT length_list();
+ extern INT length_partition();
+ extern INT length_permutation();
+@@ -1688,7 +1688,7 @@ extern INT length_vector();
+ extern INT line_of_two_points();
+ extern INT list_anfang();
+ extern INT list_ende();
+-extern INT listp();
++extern INT listp() __attribute__((pure));
+ extern INT local_anfang();
+ extern INT local_ende();
+ extern INT longint_ende();
+@@ -1750,7 +1750,7 @@ extern INT mapp_hashtable_hashtable_();
+ extern INT mapp_hashtable_hashtable_();
+ extern INT matrix_knuth();
+ extern INT matrix_monom_ypolynom();
+-extern INT matrixp();
++extern INT matrixp() __attribute__((pure));
+ extern INT matrix_to_kranztypus();
+ extern INT matrix_twoword();
+ extern INT max();
+@@ -1761,7 +1761,7 @@ extern INT max_divideddiff();
+ extern INT max_integervector();
+ extern INT max_matrix();
+ extern INT maxorder_young();
+-extern INT maxpart_comp_part();
++extern INT maxpart_comp_part() __attribute__((pure));
+ extern INT maxrindexword();
+ extern INT max_tableaux();
+ extern INT max_vector();
+@@ -1783,7 +1783,7 @@ extern INT mee_partition__();
+ extern INT mee_partition__();
+ extern INT mee_partition_partition_();
+ extern INT m_eins_reihe();
+-extern INT memcheck();
++extern INT memcheck() __attribute__((const));
+ extern INT mem_elmsym__();
+ extern INT mem_ende();
+ extern INT mem_integer__();
+@@ -1794,10 +1794,10 @@ extern INT mem_integer_partition_();
+ extern INT mem_partition__();
+ extern INT mem_size();
+ extern INT mem_size_hashtable();
+-extern INT mem_size_longint();
++extern INT mem_size_longint() __attribute__((pure));
+ extern INT mem_size_matrix();
+ extern INT mem_size_vector();
+-extern INT mem_small();
++extern INT mem_small() __attribute__((const));
+ extern INT mes_elmsym__();
+ extern INT mes_ende();
+ extern INT mes_hashtable__();
+@@ -1978,7 +1978,7 @@ extern INT monomial_recursion();
+ extern INT monomial_recursion2();
+ extern INT monomial_recursion2();
+ extern INT monomial_recursion();
+-extern INT monom_release();
++extern INT monom_release() __attribute__((const));
+ extern INT m_ou_b();
+ extern INT move_1result_hashtable();
+ extern INT move_2result_hashtable();
+@@ -2015,7 +2015,7 @@ extern INT m_perm_skwt_summe();
+ extern INT m_perm_snwt_summe();
+ extern INT m_perm_tableaux_summe();
+ extern INT m_perm_wt_summe();
+-extern INT mp_is_cst();
++extern INT mp_is_cst() __attribute__((pure));
+ extern INT mpp___();
+ extern INT mpp___();
+ extern INT mpp_ende();
+@@ -2300,13 +2300,13 @@ extern INT nb_ende();
+ extern INT ndg();
+ extern INT negeinsp();
+ extern INT negeinsp_bruch();
+-extern INT negeinsp_integer();
+-extern INT negeinsp_longint();
++extern INT negeinsp_integer() __attribute__((pure));
++extern INT negeinsp_longint() __attribute__((pure));
+ extern INT negeinsp_polynom();
+ extern INT negp();
+ extern INT negp_bruch();
+-extern INT negp_integer();
+-extern INT negp_longint();
++extern INT negp_integer() __attribute__((pure));
++extern INT negp_longint() __attribute__((pure));
+ extern INT negp_polynom();
+ extern INT neg_sum();
+ extern INT neq();
+@@ -2372,17 +2372,17 @@ extern INT null_galois();
+ extern INT null_gr_given_c_d();
+ extern INT null_object();
+ extern INT nullp();
+-extern INT nullp_bitvector();
++extern INT nullp_bitvector() __attribute__((pure));
+ extern INT nullp_bruch();
+ extern INT nullp_cyclo();
+ extern INT nullp_elmsym();
+-extern INT nullp_ff();
+-extern INT nullp_galois();
++extern INT nullp_ff() __attribute__((pure));
++extern INT nullp_galois() __attribute__((pure));
+ extern INT nullp_homsym();
+-extern INT nullp_integer();
+-extern INT nullp_integermatrix();
++extern INT nullp_integer() __attribute__((pure));
++extern INT nullp_integermatrix() __attribute__((pure));
+ extern INT nullp_integervector();
+-extern INT nullp_longint();
++extern INT nullp_longint() __attribute__((pure));
+ extern INT nullp_matrix();
+ extern INT nullp_monomial();
+ extern INT nullp_monopoly();
+@@ -2457,7 +2457,7 @@ extern INT objectwrite_vector();
+ extern INT odd();
+ extern INT oddify_longint();
+ extern INT oddify_longint();
+-extern INT odd_longint();
++extern INT odd_longint() __attribute__((pure));
+ extern INT oddpartsp();
+ extern INT odd_to_strict_part();
+ extern INT odg();
+@@ -2496,7 +2496,7 @@ extern INT p2_schursum();
+ extern INT part_anfang();
+ extern INT part_comp();
+ extern INT part_ende();
+-extern INT partitionp();
++extern INT partitionp() __attribute__((pure));
+ extern INT part_part_skewschur();
+ extern INT perm_anfang();
+ extern INT Perm_eingabe();
+@@ -2505,14 +2505,14 @@ extern INT perm_matrix();
+ extern INT perm_matrix_p();
+ extern INT perm_tableaux();
+ extern INT permutation_matrix();
+-extern INT permutationp();
++extern INT permutationp() __attribute__((pure));
+ extern INT permutationsdarstellung_matrix_pgl();
+ extern INT permutationsdarstellung_matrix_pgl();
+ extern INT perm_weintraube();
+ extern INT pes___();
+ extern INT pes___();
+ extern INT pes_elmsym__();
+-extern INT pes_ende();
++extern INT pes_ende() __attribute__((const));
+ extern INT pes_hashtable__();
+ extern INT pes_integer__();
+ extern INT pes_integer_hashtable_();
+@@ -2523,12 +2523,12 @@ extern INT pes_null__();
+ extern INT pes_null_partition_();
+ extern INT pes_null_partition_();
+ extern INT pes_partition__();
+-extern INT pfact();
++extern INT pfact() __attribute__((pure));
+ extern INT pfaffian_matrix();
+ extern INT pgcd();
+ extern INT phm___();
+ extern INT phm___();
+-extern INT phm_ende();
++extern INT phm_ende() __attribute__((const));
+ extern INT phm_hashtable__();
+ extern INT phm_hashtable_hashtable_();
+ extern INT phm_homsym__();
+@@ -2548,7 +2548,7 @@ extern INT p_hook_weight();
+ extern INT phs___();
+ extern INT phs___();
+ extern INT phs___();
+-extern INT phs_ende();
++extern INT phs_ende() __attribute__((const));
+ extern INT phs_hashtable__();
+ extern INT phs_homsym__();
+ extern INT phs_integer__();
+@@ -2564,7 +2564,7 @@ extern INT pictex_snwt_liste();
+ extern INT pictex_wt();
+ extern INT pictex_wt_liste();
+ extern INT pictex_wt_liste_co();
+-extern INT planep();
++extern INT planep() __attribute__((pure));
+ extern INT plane_tableau();
+ extern INT plaziere_verband();
+ extern INT plet_elmsym_elmsym();
+@@ -2620,8 +2620,8 @@ extern INT polya_sub();
+ extern OP pop();
+ extern INT posp();
+ extern INT posp_bruch();
+-extern INT posp_integer();
+-extern INT posp_longint();
++extern INT posp_integer() __attribute__((pure));
++extern INT posp_longint() __attribute__((pure));
+ extern INT posp_polynom();
+ extern INT posp_vector();
+ extern INT pos_sum();
+@@ -2634,7 +2634,7 @@ extern INT ppe___();
+ extern INT ppe___();
+ extern INT ppe___();
+ extern INT ppe___();
+-extern INT ppe_ende();
++extern INT ppe_ende() __attribute__((const));
+ extern INT ppe_hashtable__();
+ extern INT ppe_hashtable_hashtable_();
+ extern INT ppe_integer__();
+@@ -2654,7 +2654,7 @@ extern INT pph___();
+ extern INT pph___();
+ extern INT pph___();
+ extern INT pph___();
+-extern INT pph_ende();
++extern INT pph_ende() __attribute__((const));
+ extern INT pph_hashtable__();
+ extern INT pph_hashtable_hashtable_();
+ extern INT pph_integer__();
+@@ -2674,7 +2674,7 @@ extern INT ppm___();
+ extern INT ppm___();
+ extern INT ppm___();
+ extern INT ppm___();
+-extern INT ppm_ende();
++extern INT ppm_ende() __attribute__((const));
+ extern INT ppm_hashtable__();
+ extern INT ppm_hashtable_hashtable_();
+ extern INT ppm_integer__();
+@@ -2693,7 +2693,7 @@ extern INT ppp___();
+ extern INT ppp___();
+ extern INT ppp___();
+ extern INT ppp___();
+-extern INT ppp_ende();
++extern INT ppp_ende() __attribute__((const));
+ extern INT ppp_hashtable__();
+ extern INT ppp_hashtable_hashtable_();
+ extern INT ppp_integer__();
+@@ -2707,7 +2707,7 @@ extern INT ppp_null_partition_();
+ extern INT ppp_partition__();
+ extern INT ppp_powsym__();
+ extern INT pps___();
+-extern INT pps_ende();
++extern INT pps_ende() __attribute__((const));
+ extern INT pps_hashtable__();
+ extern INT pps_hashtable_hashtable_();
+ extern INT pps_integer__();
+@@ -2718,7 +2718,7 @@ extern INT pps_partition__();
+ extern INT pps_powsym__();
+ extern INT prepartdom();
+ extern INT primep();
+-extern INT primep_ff();
++extern INT primep_ff() __attribute__((pure));
+ extern INT prime_power_p();
+ extern INT primitive_element_ff_given_q();
+ extern INT primitive_element_ff();
+@@ -2756,7 +2756,7 @@ extern INT psl_apply_i_integer();
+ extern INT psl_apply_i_longint();
+ extern INT psl_apply_longint();
+ extern INT psm___();
+-extern INT psm_ende();
++extern INT psm_ende() __attribute__((const));
+ extern INT p_splitpart();
+ extern INT p_splitpart2();
+ extern INT p_splitpart();
+@@ -2764,7 +2764,7 @@ extern INT psr_apply_i_integer();
+ extern INT psr_apply_i_longint();
+ extern INT pss___();
+ extern INT pss___();
+-extern INT pss_ende();
++extern INT pss_ende() __attribute__((const));
+ extern INT pss_hashtable__();
+ extern INT pss_hashtable_hashtable_();
+ extern INT pss_integer__();
+@@ -2795,7 +2795,7 @@ extern INT q_core_sign();
+ extern INT qdimension();
+ extern INT qdimension_schubert();
+ extern INT qsort_vector();
+-extern INT quadraticp();
++extern INT quadraticp() __attribute__((pure));
+ extern INT quadratic_remainders();
+ extern INT quasi_normal_form();
+ extern INT quasinormalform();
+@@ -2933,7 +2933,7 @@ extern INT s_b_oi();
+ extern OP s_b_u();
+ extern INT s_b_ui();
+ extern INT s_bv_li();
+-extern INT scalarp();
++extern INT scalarp() __attribute__((pure));
+ extern INT scalarproduct();
+ extern INT scalarproduct_bar_schubert();
+ extern INT scalarproduct_elmsym();
+@@ -3029,9 +3029,9 @@ extern INT set_root_parameters ();
+ extern INT set_tex_polynom_parameter();
+ extern INT setup_numbers();
+ extern INT set_useful_monopolies ();
+-extern OP s_ff_c();
+-extern INT s_ff_ci();
+-extern INT s_ff_di();
++extern OP s_ff_c() __attribute__((pure));
++extern INT s_ff_ci() __attribute__((pure));
++extern INT s_ff_di() __attribute__((pure));
+ extern INT s_ff_ii();
+ extern OBJECTKIND s_gr_k();
+ extern OP s_gr_kn();
+@@ -3045,11 +3045,11 @@ extern OP s_gr_xkoori();
+ extern OP s_gr_ykoori();
+ extern INT signum();
+ extern INT signum_permutation();
+-extern INT s_i_i();
++extern INT s_i_i() __attribute__((pure));
+ extern INT singularp();
+ extern INT Sinus_eingabe();
+ extern INT s_i_wt();
+-extern INT skewpartitionp();
++extern INT skewpartitionp() __attribute__((pure));
+ extern INT skewplane_plane();
+ extern INT skip_comment();
+ extern INT skip_integer();
+@@ -3062,7 +3062,7 @@ extern INT s_kr_gli();
+ extern OP s_kr_i();
+ extern OP s_kr_v();
+ extern INT Sk_wt();
+-extern OP s_lc_poly();
++extern OP s_lc_poly() __attribute__((pure));
+ extern OP s_l_n();
+ extern OP s_l_s();
+ extern OP s_m_h();
+@@ -3080,15 +3080,15 @@ extern INT s_mo_sii();
+ extern OP s_mo_sl();
+ extern INT s_mo_sli();
+ extern OP s_m_s();
+-extern OP s_mz_po();
++extern OP s_mz_po() __attribute__((pure));
+ extern OP s_mz_v();
+-extern OP s_mz_vi();
+-extern INT s_mz_vii();
++extern OP s_mz_vi() __attribute__((pure));
++extern INT s_mz_vii() __attribute__((pure));
+ extern INT sn_character ();
+ extern OP s_n_d();
+-extern OP s_n_dcd();
+-extern OP s_n_dci();
+-extern OP s_n_dcp();
++extern OP s_n_dcd() __attribute__((pure));
++extern OP s_n_dci() __attribute__((pure));
++extern OP s_n_dcp() __attribute__((pure));
+ extern INT sn_dimension ();
+ extern INT s_ni_wt();
+ extern INT S_nkq_maxgrad();
+@@ -3123,7 +3123,7 @@ extern INT specht_irred_characteristik()
+ extern INT specht_m_part_sc();
+ extern INT specht_poly();
+ extern INT specht_powersum();
+-extern INT special_eq();
++extern INT special_eq() __attribute__((pure));
+ extern INT special_mult_apply_homsym_homsym();
+ extern INT speicher_anfang();
+ extern INT speicher_ende();
+@@ -3216,7 +3216,7 @@ extern OP s_s_sl();
+ extern INT s_s_sli();
+ extern INT standardise_cold_tableaux_list ();
+ extern INT standardise_cyclo();
+-extern INT standardp();
++extern INT standardp() __attribute__((pure));
+ extern INT starpart();
+ extern INT starting_bar_schubert();
+ extern INT start_longint();
+@@ -3260,8 +3260,8 @@ extern INT s_t_uli();
+ extern OP s_t_us();
+ extern INT sub();
+ extern INT sub_apply();
+-extern INT sub_comp_bv();
+-extern INT sub_comp_part();
++extern INT sub_comp_bv() __attribute__((pure));
++extern INT sub_comp_part() __attribute__((pure));
+ extern INT sub_default();
+ extern INT sub_part_part();
+ extern INT substitute_one_matrix ();
+@@ -3286,6 +3286,9 @@ extern OP s_w_s();
+ extern INT S_wt();
+ extern INT s_x_nu_to_ypolynom();
+ extern INT symchar_hoch_n();
++extern int SYM_abs() __attribute__((const));
++extern int SYM_isdigit() __attribute__((const));
++extern int SYM_strlen() __attribute__((pure));
+ extern INT SYMMETRICA_bricknumber();
+ extern INT SYMMETRICA_EH();
+ extern INT SYMMETRICA_EM();
+@@ -3315,7 +3318,7 @@ extern INT tab_anfang();
+ extern INT tab_ende();
+ extern INT tab_funk();
+ extern INT tableaux_character ();
+-extern INT tableauxp();
++extern INT tableauxp() __attribute__((pure));
+ extern INT table_of_gauss_numbers();
+ extern INT table_of_Rbar_nkq();
+ extern INT table_of_R_nkq();
+@@ -3664,7 +3667,7 @@ extern INT t_ZYKEL_VECTOR();
+ extern INT UD_permutation();
+ extern INT umriss_tableaux();
+ extern INT unimodalp();
+-extern INT unitp_galois();
++extern INT unitp_galois() __attribute__((pure));
+ extern INT unrank_degree_permutation();
+ extern INT unrank_given_q_ff();
+ extern INT unrank_given_qk_point();
+@@ -3725,7 +3728,7 @@ extern INT young_polynom();
+ extern INT young_scalar_tafel();
+ extern INT young_tafel();
+ extern INT zeilenanfang();
+-extern INT zeilenende();
++extern INT zeilenende() __attribute__((pure));
+ extern INT zeilen_summe();
+ extern INT zentralprim();
+ extern INT zerlege_nk_codes();
+--- ./de.c.orig	2012-05-08 13:45:58.298473250 -0600
++++ ./de.c	2012-05-08 13:46:03.739466882 -0600
+@@ -428,12 +428,11 @@ INT memcheck(stelle) char *stelle;
+ INT sym_background = 0L;
+ INT sym_www = 0L;
+ INT sym_timelimit = 0L;
+-INT fatal_error(fehlertext) char *fehlertext;
++void fatal_error(fehlertext) char *fehlertext;
+ /* AK 270295 */
+ {
+     fprintf(stderr,"fatal error in function %s\n",fehlertext);
+     exit(11);
+-    return OK;
+ }
+ INT error(fehlertext) char *fehlertext;
+ /* if answer == a ==> abort
+@@ -751,8 +750,10 @@ int SYM_isdigit(a) char a; /* AK 040194
+ int SYM_strlen(a) char *a; /* AK 030294 */
+ { int i=0; while (*a++) i++; return i; }
+ 
++#ifndef DGTRUE
+ int SYM_memcmp(a,b,c) char *a,*b; /* AK 210294 */
+ { return memcmp(a,b,c); }
++#endif
+ 
+ int SYM_abs(a) INT a; /* AK 230695 */
+ { return (a>0 ) ? a : -a; }
+--- ./sr.c.orig	2007-12-06 09:30:35.000000000 -0700
++++ ./sr.c	2012-05-08 13:46:03.740466881 -0600
+@@ -977,7 +977,6 @@ INT sscan_schur(t,a) char *t; OP a;
+     INT i,n=1,erg = OK;
+     OP c,d,e;
+     char *v;
+-    int SYM_isdigit();
+ 
+     COP("sscan_schur(2)",a);
+ 
+@@ -1032,7 +1031,6 @@ INT sscan_homsym(t,a) char *t; OP a;
+     INT i,n=1,erg = OK;
+     OP c,d,e;
+     char *v;
+-    int SYM_isdigit();
+     COP("sscan_homsym(1)",t);
+     COP("sscan_homsym(2)",a);
+ 
+@@ -1086,7 +1084,6 @@ INT sscan_elmsym(t,a) char *t; OP a;
+     INT i,n=1,erg = OK;
+     OP c,d,e;
+     char *v;
+-    int SYM_isdigit();
+     COP("sscan_elmsym(1)",t);
+     CTO(EMPTY,"sscan_elmsym(2)",a);
+  
