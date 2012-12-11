@@ -103,3 +103,49 @@ install -m 644 *.h $RPM_BUILD_ROOT%{_includedir}/%{name}/
 %doc test.c
 %{_includedir}/%{name}
 %{_libdir}/lib%{name}.so
+
+
+%changelog
+* Fri Aug 24 2012 Paulo Andrade <pcpa@mandriva.com.br> 2.0-11
++ Revision: 815716
+- Rebuild.
+- Bump release and rebuild.
+
+* Fri Aug 24 2012 Paulo Andrade <pcpa@mandriva.com.br> 2.0-9
++ Revision: 815699
+- Bump release and rebuild.
+- Bump release, rename packages to match library policy and rebuild.
+
+* Thu Aug 16 2012 Paulo Andrade <pcpa@mandriva.com.br> 2.0-7
++ Revision: 814996
+- Bump release and rebuild due to partial package upload.
+
+* Wed Aug 15 2012 Paulo Andrade <pcpa@mandriva.com.br> 2.0-6
++ Revision: 814885
+- Build only a dynamically linked library.
+- Rework package to match fedora symmetrica package.
+
+* Wed Jun 17 2009 Paulo Andrade <pcpa@mandriva.com.br> 2.0-5mdv2010.0
++ Revision: 386505
+- Rebuild using sagemath patches.
+
+* Tue May 19 2009 Paulo Andrade <pcpa@mandriva.com.br> 2.0-4mdv2010.0
++ Revision: 377751
+- Rebuild with -fPIC as suggested by the x86_64 link error.
+
+* Thu May 14 2009 Paulo Andrade <pcpa@mandriva.com.br> 2.0-3mdv2010.0
++ Revision: 375760
++ rebuild (emptylog)
+
+* Tue Apr 07 2009 Paulo Andrade <pcpa@mandriva.com.br> 2.0-2mdv2009.1
++ Revision: 364567
+- Split package to have minimal devel files in libsymmetrica-static-devel.
+  required to link sage math python modules.
+
+* Fri Mar 27 2009 Paulo Andrade <pcpa@mandriva.com.br> 2.0-1mdv2009.1
++ Revision: 361687
+- Initial import of symmetrica, version 2.0
+  Collection of math routines in the C programming language
+  http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/
+- symmetrica
+
