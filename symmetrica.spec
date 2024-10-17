@@ -8,7 +8,7 @@ Summary:        A Collection of Routines for Solving Symmetric Groups
 # Note: they claim it's 'public domain' but then provide this:
 # http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/copyright_engl.html
 License:        MIT
-URL:            http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/
+URL:            https://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/
 Source0:        http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/SYM2_0_tar.gz
 Source1:        %{name}.rpmlintrc
 # Sent upstream 8 May 2012.  Sagemath patch to fix namespace collisions on the
